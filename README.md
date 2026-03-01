@@ -1,4 +1,4 @@
-# GenGov — Generational Representation in U.S. Congress
+# PolitiGen — Generational Representation in the U.S. Government
 
 A data visualization project tracking how generations have risen, dominated, and been displaced across 125 years of U.S. legislative history (57th–119th Congress, 1901–2025).
 
