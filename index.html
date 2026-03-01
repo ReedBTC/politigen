@@ -34,6 +34,50 @@
     align-items: center;
   }
 
+  /* ── LOADING OVERLAY ─────────────────────────────────── */
+  #loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+  }
+  #loading-overlay.hidden { opacity: 0; pointer-events: none; }
+  .loading-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 0.15em;
+    color: var(--text);
+    margin-bottom: 24px;
+  }
+  .loading-logo span { color: var(--boom); }
+  .loading-bar-track {
+    width: 200px;
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+  .loading-bar-fill {
+    height: 100%;
+    background: var(--boom);
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: 1px;
+  }
+  .loading-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 12px;
+  }
+
   /* ── SITE HEADER ─────────────────────────────────────── */
   .site-header {
     width: 100%;
@@ -426,9 +470,29 @@
     margin-bottom: 4px;
     color: #f0ebe0;
   }
+
+  /* ── ERROR STATE ─────────────────────────────────────── */
+  .data-error {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--red);
+    padding: 16px;
+    border: 1px solid var(--red);
+    opacity: 0.6;
+    margin-top: 16px;
+  }
 </style>
 </head>
 <body>
+
+<!-- LOADING OVERLAY -->
+<div id="loading-overlay">
+  <div class="loading-logo">Gen<span>Gov</span></div>
+  <div class="loading-bar-track">
+    <div class="loading-bar-fill" id="loading-bar"></div>
+  </div>
+  <div class="loading-label" id="loading-label">Loading data…</div>
+</div>
 
 <!-- HEADER -->
 <header class="site-header">
@@ -514,17 +578,17 @@
     <svg id="chart-age" width="100%" height="320"></svg>
   </div>
 
-  <div class="stats-row">
+  <div class="stats-row" id="age-stats-row">
     <div class="stat">
-      <div class="stat-num">48.3</div>
-      <div class="stat-label">Mean age in 1901<br>57th Congress</div>
+      <div class="stat-num" id="stat-age-first">—</div>
+      <div class="stat-label" id="stat-age-first-label">Mean age in 1901<br>57th Congress</div>
     </div>
     <div class="stat">
-      <div class="stat-num red">58.5</div>
-      <div class="stat-label">Mean age in 2025<br>119th Congress</div>
+      <div class="stat-num red" id="stat-age-last">—</div>
+      <div class="stat-label" id="stat-age-last-label">Mean age in 2025<br>119th Congress</div>
     </div>
     <div class="stat">
-      <div class="stat-num red">+10.2 yrs</div>
+      <div class="stat-num red" id="stat-age-diff">—</div>
       <div class="stat-label">Increase since 1901<br>Most since 1980</div>
     </div>
   </div>
@@ -537,8 +601,8 @@
   <p class="subtitle">At four moments in history: who was in Congress, how old they were, and how long they'd already been there. The Boomer column tells the whole story.</p>
 
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('congress', event)">Full Congress</button>
-    <button class="tab" onclick="switchTab('senate', event)">Senate Only</button>
+    <button class="tab active" onclick="switchTab('Full Congress', event)">Full Congress</button>
+    <button class="tab" onclick="switchTab('Senate', event)">Senate Only</button>
   </div>
 
   <div class="snap-legend">
@@ -593,34 +657,193 @@ const COLORS = {
 };
 
 /* ═══════════════════════════════════════════════════════════
-   SECTION 1 DATA — RISE & FALL
+   CSV PARSER — handles quoted fields, trims whitespace
 ═══════════════════════════════════════════════════════════ */
-const rfYears = [1901,1903,1905,1907,1909,1911,1913,1915,1917,1919,1921,1923,1925,1927,1929,1931,1933,1935,1937,1939,1941,1943,1945,1947,1949,1951,1953,1955,1957,1959,1961,1963,1965,1967,1969,1971,1973,1975,1977,1979,1981,1983,1985,1987,1989,1991,1993,1995,1997,1999,2001,2003,2005,2007,2009,2011,2013,2015,2017,2019,2021,2023,2025];
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',').map(h => h.trim());
+  return lines.slice(1).map(line => {
+    // Basic CSV parse (handles quoted fields with commas inside)
+    const fields = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i <= line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') { inQ = !inQ; }
+      else if ((ch === ',' || i === line.length) && !inQ) { fields.push(cur.trim()); cur = ''; }
+      else { cur += ch; }
+    }
+    const row = {};
+    headers.forEach((h, i) => {
+      const v = fields[i] ?? '';
+      row[h] = isNaN(v) || v === '' ? v : Number(v);
+    });
+    return row;
+  });
+}
 
-const congressData = {
-  'Pre-G.I.': [100,100,100,100,100,100,100,100,100,100,100,100,100,99.9,99.7,98.9,97.6,95.6,92.7,88.8,85.1,81.1,74.2,67.7,62.8,56.6,52.1,46.7,39.8,35.1,27.1,22,16.6,11.5,9.1,6.1,4.3,2.7,1.9,0.8,0.3,0.1,0.2,0.2,0.2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  'G.I. Generation': [0,0,0,0,0,0,0,0,0,0,0,0,0,0.1,0.3,1.1,2.4,4.4,7.3,11.2,14.9,18.9,25.8,32.3,37.2,43.3,47.7,53.2,59,61.9,66.7,66.9,68,68.1,65.1,61.3,54.7,48.3,39.7,32.8,27.5,21.7,18.4,16.6,13.5,10.1,7.9,5.3,4.2,2.9,1.9,1.8,1.4,1.2,1,0.5,0.4,0.1,0,0,0,0,0],
-  'Silent Generation': [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.1,0.1,0.1,1.3,3,6.2,11,15.4,20.4,25.6,32.4,38.8,44.8,51.8,55.3,56.8,60.1,59.8,57.5,56.3,52.9,48.1,42.6,39.3,36,33.3,28.7,24.8,22.1,17.1,14.7,11.9,8.8,7,4.9,4.1,3.2,2.3],
-  'Baby Boom Generation': [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.1,0.1,2.2,4.2,6.5,11.1,15.3,18,21.6,25.7,30.1,36.7,42.8,49.6,52.7,54.9,57.1,59.8,61.8,61.7,60,56.6,55.3,54.2,49,45.9,39.7,35,33.8],
-  'Gen X (13ers)': [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.3,1.2,2.5,3.8,6.1,7.6,9.8,12.1,15,22,28.2,32,36.1,40.8,44.4,47.6,50.6,52.9],
-  'Millennial Generation': [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.3,0.7,3.3,4.9,8.6,11.2,11],
+/* ═══════════════════════════════════════════════════════════
+   DATA LOADING
+═══════════════════════════════════════════════════════════ */
+async function loadCSV(path) {
+  const resp = await fetch(path);
+  if (!resp.ok) throw new Error(`Failed to fetch ${path}: ${resp.status}`);
+  return parseCSV(await resp.text());
+}
+
+function setLoadingProgress(pct, label) {
+  document.getElementById('loading-bar').style.width = pct + '%';
+  document.getElementById('loading-label').textContent = label;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION 1 — BUILD RISE & FALL DATA FROM CSV
+   CSV columns: year, pct_pregi, pct_gi_generation,
+     pct_silent_generation, pct_baby_boom_generation,
+     pct_gen_x_13ers, pct_millennial_generation
+     senate_pct_* (same suffixes)
+═══════════════════════════════════════════════════════════ */
+function buildRFData(historicalRows) {
+  // Sort by year ascending
+  const rows = [...historicalRows].sort((a,b) => a.year - b.year);
+  const rfYears = rows.map(r => r.year);
+
+  const COL_MAP = {
+    'Pre-G.I.':            'pct_pregi',
+    'G.I. Generation':     'pct_gi_generation',
+    'Silent Generation':   'pct_silent_generation',
+    'Baby Boom Generation':'pct_baby_boom_generation',
+    'Gen X (13ers)':       'pct_gen_x_13ers',
+    'Millennial Generation':'pct_millennial_generation',
+  };
+  const SEN_COL_MAP = {
+    'Pre-G.I.':            'senate_pct_pregi',
+    'G.I. Generation':     'senate_pct_gi_generation',
+    'Silent Generation':   'senate_pct_silent_generation',
+    'Baby Boom Generation':'senate_pct_baby_boom_generation',
+    'Gen X (13ers)':       'senate_pct_gen_x_13ers',
+    'Millennial Generation':'senate_pct_millennial_generation',
+  };
+
+  const congressData = {}, senateData = {};
+  for (const gen of GENS) {
+    congressData[gen] = rows.map(r => r[COL_MAP[gen]] ?? 0);
+    senateData[gen]   = rows.map(r => r[SEN_COL_MAP[gen]] ?? 0);
+  }
+
+  return { rfYears, congressData, senateData };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION 2 — BUILD AGE DATA FROM CSV
+═══════════════════════════════════════════════════════════ */
+function buildAgeData(historicalRows) {
+  return [...historicalRows]
+    .sort((a,b) => a.year - b.year)
+    .map(r => ({
+      year:   r.year,
+      mean:   r.mean_age,
+      median: r.median_age,
+      senate: r.senate_mean_age,
+      house:  r.house_mean_age,
+    }));
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION 0 — BUILD BLS DATA FROM CSV
+═══════════════════════════════════════════════════════════ */
+const BLS_GENS = ['Gen Z','Millennial','Gen X','Boomer','Silent'];
+const BLS_COLORS = {
+  'Gen Z':      '#9b6fa8',
+  'Millennial': '#7fb069',
+  'Gen X':      '#5b8fa8',
+  'Boomer':     '#e8875a',
+  'Silent':     '#8a8070',
 };
-
-const senateData = {
-  'Pre-G.I.': [100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,99.3,98.5,97.8,95.7,95.5,90.5,86.3,84.8,79,70.8,67.2,62.5,53.4,48.1,42.1,34.7,29.9,23.4,19.7,13.4,10.4,5.5,2.9,1.5,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  'G.I. Generation': [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.7,1.5,2.2,4.3,4.5,9.5,13.7,15.2,21,29.2,32.8,37.5,46.6,50.4,54,57.3,61.5,65.3,63.8,64.6,63.2,59.8,51.1,43.3,38.4,33.9,28.7,26.8,23.7,20.5,16.8,14.1,13,9.9,7.3,6.8,4.9,3.9,3.7,2.3,1.5,0,0,0,0,0,0],
-  'Silent Generation': [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1.5,4,8.1,8.5,11.3,16.5,22,26.4,34.6,45.3,52.2,56,58.9,61.5,61.8,62.7,63.9,63.2,55.5,50.4,47.1,45.5,39.8,36.1,34.4,29.1,23.5,19.1,15.7,14,9.2,7.6,5.6,2.7],
-  'Baby Boom Generation': [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.7,3,4.8,7.1,9.8,11.4,13.6,15.6,20,30.5,36.6,43,45.5,49.2,54.9,54.7,56,56.8,57.3,58.7,58.7,59.7,55.9,52.4,54.5],
-  'Gen X (13ers)': [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1.6,4.2,4.1,7,11.2,17.4,22.1,25.6,27.3,30.3,33.9,37.9,38.4],
-  'Millennial Generation': [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.8,2.5,4,4.5],
-};
-
-const ERAS = [
-  { label:'PRE-G.I.', color:'#8a8070', start:1901, end:1940 },
-  { label:'G.I.',     color:'#5b8fa8', start:1955, end:1975 },
-  { label:'SILENT',   color:'#7fb069', start:1977, end:1991 },
-  { label:'BOOMER',   color:'#e8875a', start:1993, end:2025 },
+// Display order for chart rows (elected first, then all workers, then sectors)
+const BLS_ROW_ORDER = [
+  'Elected Officials',
+  'All Workers',
+  'Agriculture','Professional Svc','Wholesale Trade','Mining',
+  'Education & Health',"Gov't Workers",'Information/Tech',
+  'Manufacturing','Finance','Construction','Leisure & Hosp.',
 ];
+
+function buildBLSRows(blsCSV) {
+  // Index by sector name
+  const byLabel = {};
+  for (const r of blsCSV) byLabel[r.sector] = r;
+
+  return BLS_ROW_ORDER
+    .filter(label => byLabel[label])
+    .map(label => {
+      const r = byLabel[label];
+      return {
+        label,
+        isElected:    !!r.is_elected || r.is_elected === 'True',
+        isAllWorkers: !!r.is_all_workers || r.is_all_workers === 'True',
+        // vals order: [GenZ, Millennial, GenX, Boomer, Silent]
+        vals: [
+          r.pct_genz       ?? 0,
+          r.pct_millennial ?? 0,
+          r.pct_genx       ?? 0,
+          r.pct_boomer     ?? 0,
+          r.pct_silent     ?? 0,
+        ],
+      };
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION 3 — BUILD SNAPSHOT DATA FROM CSV
+═══════════════════════════════════════════════════════════ */
+const SNAP_COLORS = {
+  'G.I. Generation':     '#5b8fa8',
+  'Silent Generation':   '#7fb069',
+  'Baby Boom Generation':'#e8875a',
+  'Gen X (13ers)':       '#9b6fa8',
+  'Millennial Generation':'#e8c84a',
+};
+const SNAP_DISPLAY_NAMES = {
+  'G.I. Generation':     'G.I.',
+  'Silent Generation':   'Silent',
+  'Baby Boom Generation':'Boomer',
+  'Gen X (13ers)':       'Gen X',
+  'Millennial Generation':'Millennial',
+};
+const SNAP_CONTEXT = {
+  1965:'Vietnam era<br>G.I. Generation peak',
+  1985:'Cold War<br>Silent takes over',
+  2005:'Post-9/11<br>Boomer majority begins',
+  2025:"Today<br>Boomers still won't leave",
+};
+const SNAP_YEARS = [1965, 1985, 2005, 2025];
+
+function buildSnapData(snapCSV) {
+  // Structure: { 'Full Congress': { 1965: [...rows], ... }, 'Senate': { ... } }
+  const out = { 'Full Congress': {}, 'Senate': {} };
+  for (const yr of SNAP_YEARS) {
+    out['Full Congress'][yr] = [];
+    out['Senate'][yr] = [];
+  }
+  for (const r of snapCSV) {
+    const yr = r.year;
+    if (!SNAP_YEARS.includes(yr)) continue;
+    // CSV chamber values: 'Full Congress' or 'Senate'
+    const chamberKey = r.chamber === 'Senate' ? 'Senate' : 'Full Congress';
+    if (!out[chamberKey][yr]) out[chamberKey][yr] = [];
+    out[chamberKey][yr].push({
+      gen:     r.generation,
+      n:       r.n,
+      age:     r.mean_age,
+      pct:     r.pct,
+    });
+  }
+  return out;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CHART RENDERERS
+═══════════════════════════════════════════════════════════ */
 
 function smooth(pts, t=0.4) {
   let d = `M${pts[0][0]},${pts[0][1]}`;
@@ -631,7 +854,7 @@ function smooth(pts, t=0.4) {
   return d;
 }
 
-function buildRFChart(svgId, data, height) {
+function buildRFChart(svgId, rfYears, data, height) {
   const svg = document.getElementById(svgId);
   svg.setAttribute('height', height);
   const W = svg.parentElement.offsetWidth;
@@ -640,22 +863,28 @@ function buildRFChart(svgId, data, height) {
   const PAD = {top:14, right:16, bottom:30, left:38};
   const CW = W - PAD.left - PAD.right;
   const CH = height - PAD.top - PAD.bottom;
-  const xS = yr => PAD.left + (yr-1901)/(2025-1901)*CW;
+  const minYr = rfYears[0], maxYr = rfYears[rfYears.length-1];
+  const xS = yr => PAD.left + (yr-minYr)/(maxYr-minYr)*CW;
   const yS = v  => PAD.top + CH - (v/100)*CH;
 
   for (const gv of [0,25,50,75,100]) {
     svgEl('line',{x1:PAD.left,x2:PAD.left+CW,y1:yS(gv),y2:yS(gv),stroke:gv===0?'#333':'#1e1e26','stroke-width':gv===0?1.5:1},svg);
     svgEl('text',{x:PAD.left-5,y:yS(gv)+4,'text-anchor':'end','font-family':'DM Mono,monospace','font-size':9,fill:'#555'},svg).textContent=gv+'%';
   }
-  for (const yr of [1901,1920,1940,1960,1980,2000,2020]) {
+  // X-axis ticks at round decades
+  const tickYears = rfYears.filter(y => y % 20 === 1 || y === minYr || y === maxYr);
+  const shownTicks = new Set();
+  for (const yr of [1901,1920,1940,1960,1980,2000,2020].filter(y => y >= minYr && y <= maxYr)) {
     svgEl('line',{x1:xS(yr),x2:xS(yr),y1:PAD.top+CH,y2:PAD.top+CH+4,stroke:'#444','stroke-width':1},svg);
     svgEl('text',{x:xS(yr),y:PAD.top+CH+14,'text-anchor':'middle','font-family':'DM Mono,monospace','font-size':9,fill:'#555'},svg).textContent=yr;
+    shownTicks.add(yr);
   }
   svgEl('line',{x1:PAD.left,x2:PAD.left,y1:PAD.top,y2:PAD.top+CH,stroke:'#333','stroke-width':1.5},svg);
   svgEl('line',{x1:PAD.left,x2:PAD.left+CW,y1:PAD.top+CH,y2:PAD.top+CH,stroke:'#333','stroke-width':1.5},svg);
 
   for (const gen of GENS) {
     const vals = data[gen];
+    if (!vals || vals.every(v => v === 0)) continue;
     const pts = rfYears.map((yr,i) => [xS(yr), yS(vals[i])]);
     svgEl('path',{d:smooth(pts),fill:'none',stroke:COLORS[gen],'stroke-width':4,opacity:0.12},svg);
     svgEl('path',{d:smooth(pts),fill:'none',stroke:COLORS[gen],'stroke-width':2,opacity:0.85},svg);
@@ -671,17 +900,24 @@ function buildRFChart(svgId, data, height) {
 
   overlay.addEventListener('mousemove', e => {
     const rect = svg.getBoundingClientRect();
-    const rawYear = 1901 + (e.clientX - rect.left - PAD.left) / CW * (2025-1901);
+    const rawYear = minYr + (e.clientX - rect.left - PAD.left) / CW * (maxYr-minYr);
     const nearest = rfYears.reduce((a,b) => Math.abs(b-rawYear)<Math.abs(a-rawYear)?b:a);
     const ni = rfYears.indexOf(nearest);
     hLine.setAttribute('x1',xS(nearest)); hLine.setAttribute('x2',xS(nearest)); hLine.setAttribute('display','');
-    const sorted = GENS.map(g=>({g,v:data[g][ni]})).sort((a,b)=>b.v-a.v).filter(d=>d.v>0.5);
+    const sorted = GENS.map(g=>({g,v:data[g]?.[ni]??0})).sort((a,b)=>b.v-a.v).filter(d=>d.v>0.5);
     tip.style.display='block'; tip.style.left=(e.clientX+16)+'px'; tip.style.top=(e.clientY-30)+'px';
     document.getElementById('tip-year').textContent=nearest;
-    document.getElementById('tip-body').innerHTML=sorted.map(d=>`<span style="color:${COLORS[d.g]}">${GEN_SHORT[GENS.indexOf(d.g)]}</span>: ${d.v}%`).join('<br>');
+    document.getElementById('tip-body').innerHTML=sorted.map(d=>`<span style="color:${COLORS[d.g]}">${GEN_SHORT[GENS.indexOf(d.g)]}</span>: ${d.v.toFixed(1)}%`).join('<br>');
   });
   overlay.addEventListener('mouseleave', () => { tip.style.display='none'; hLine.setAttribute('display','none'); });
 }
+
+const ERAS = [
+  { label:'PRE-G.I.', color:'#8a8070', start:1901, end:1940 },
+  { label:'G.I.',     color:'#5b8fa8', start:1955, end:1975 },
+  { label:'SILENT',   color:'#7fb069', start:1977, end:1991 },
+  { label:'BOOMER',   color:'#e8875a', start:1993, end:2025 },
+];
 
 function buildEraBar() {
   const bar = document.getElementById('era-bar');
@@ -711,30 +947,7 @@ function buildGenLegend() {
   }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   SECTION 2 — AGE TREND
-═══════════════════════════════════════════════════════════ */
-const ageRaw = [
-  [1901,48.3,48,55.6,46.8],[1903,48.7,48,56.3,47.2],[1905,49.4,49,56.8,47.8],[1907,49.9,49,56.9,48.4],
-  [1909,50.0,49,56.0,48.7],[1911,49.7,49,55.7,48.3],[1913,49.4,49,55.8,48.2],[1915,49.7,49,55.9,48.6],
-  [1917,50.1,49,55.4,49.0],[1919,50.6,49,56.0,49.6],[1921,50.9,50,56.2,49.9],[1923,51.7,52,56.7,50.8],
-  [1925,52.1,52,55.8,51.3],[1927,52.5,53,56.5,51.7],[1929,53.3,54,57.5,52.4],[1931,53.1,53,57.0,52.3],
-  [1933,52.9,54,56.9,52.2],[1935,51.9,52,56.4,51.0],[1937,51.2,51,56.6,50.1],[1939,51.1,50,56.3,50.0],
-  [1941,51.7,51,57.4,50.6],[1943,51.9,50,56.2,51.0],[1945,51.7,51,56.1,50.8],[1947,51.6,51,56.5,50.5],
-  [1949,51.9,51,56.1,51.0],[1951,51.8,52,55.4,51.1],[1953,52.3,52,56.5,51.4],[1955,52.4,52,56.9,51.4],
-  [1957,52.3,52,56.6,51.4],[1959,52.7,52,57.0,51.8],[1961,52.0,52,56.7,51.0],[1963,51.9,51,56.2,51.0],
-  [1965,51.6,50,56.7,50.6],[1967,51.4,50,56.4,50.3],[1969,51.7,51,56.3,50.7],[1971,51.5,50.5,55.4,50.7],
-  [1973,51.0,50,55.2,50.1],[1975,50.4,50,54.3,49.5],[1977,49.6,49,53.1,48.8],[1979,49.0,49,52.5,48.2],
-  [1981,49.1,49,53.1,48.3],[1983,49.4,49,53.2,48.6],[1985,50.2,49,53.6,49.4],[1987,51.1,50,54.6,50.3],
-  [1989,51.8,50.5,55.5,51.0],[1991,51.6,50,56.3,50.7],[1993,51.8,51,56.8,50.9],[1995,51.8,51,56.9,50.7],
-  [1997,52.6,52,57.4,51.5],[1999,53.1,52.5,57.9,52.0],[2001,53.9,53,58.4,52.9],[2003,54.7,55,59.0,53.7],
-  [2005,55.4,55.5,59.6,54.4],[2007,56.2,56,60.5,55.2],[2009,56.0,56,60.8,54.9],[2011,56.2,57,60.3,55.3],
-  [2013,56.8,57,60.4,56.0],[2015,57.2,58,60.6,56.4],[2017,56.8,57,61.7,55.8],[2019,57.2,58,61.9,56.2],
-  [2021,56.8,57,62.4,55.7],[2023,57.0,57,62.5,55.9],[2025,58.5,58,63.9,57.3]
-];
-const ageData = ageRaw.map(r => ({year:r[0],mean:r[1],median:r[2],senate:r[3],house:r[4]}));
-
-function buildAgeChart() {
+function buildAgeChart(ageData) {
   const svg = document.getElementById('chart-age');
   const W = svg.parentElement.offsetWidth;
   const H = 320;
@@ -742,7 +955,8 @@ function buildAgeChart() {
   const PAD = {top:16, right:20, bottom:36, left:46};
   const CW = W-PAD.left-PAD.right, CH = H-PAD.top-PAD.bottom;
   const minY=46, maxY=66;
-  const xS = yr => PAD.left + (yr-1901)/(2025-1901)*CW;
+  const minYr = ageData[0].year, maxYr = ageData[ageData.length-1].year;
+  const xS = yr => PAD.left + (yr-minYr)/(maxYr-minYr)*CW;
   const yS = v  => PAD.top + CH - (v-minY)/(maxY-minY)*CH;
   const makePath = key => ageData.map((d,i)=>`${i===0?'M':'L'}${xS(d.year).toFixed(1)},${yS(d[key]).toFixed(1)}`).join(' ');
 
@@ -750,13 +964,13 @@ function buildAgeChart() {
     svgEl('line',{x1:PAD.left,x2:PAD.left+CW,y1:yS(gy),y2:yS(gy),stroke:'#1e1e26','stroke-width':1},svg);
     svgEl('text',{x:PAD.left-6,y:yS(gy)+4,'text-anchor':'end','font-family':'DM Mono,monospace','font-size':10,fill:'#555'},svg).textContent=gy;
   }
-  for (const xt of [1901,1920,1940,1960,1980,2000,2020]) {
+  for (const xt of [1901,1920,1940,1960,1980,2000,2020].filter(y => y >= minYr && y <= maxYr)) {
     svgEl('line',{x1:xS(xt),x2:xS(xt),y1:PAD.top+CH,y2:PAD.top+CH+5,stroke:'#555','stroke-width':1},svg);
     svgEl('text',{x:xS(xt),y:PAD.top+CH+16,'text-anchor':'middle','font-family':'DM Mono,monospace','font-size':10,fill:'#555'},svg).textContent=xt;
   }
 
   // Shade post-1980
-  svgEl('rect',{x:xS(1980),y:PAD.top,width:xS(2025)-xS(1980),height:CH,fill:'#e05252',opacity:0.04},svg);
+  svgEl('rect',{x:xS(1980),y:PAD.top,width:xS(maxYr)-xS(1980),height:CH,fill:'#e05252',opacity:0.04},svg);
   svgEl('line',{x1:xS(1980),x2:xS(1980),y1:PAD.top,y2:PAD.top+CH,stroke:'#e05252','stroke-width':1,'stroke-dasharray':'3,3',opacity:0.5},svg);
   svgEl('text',{x:xS(1980)+5,y:PAD.top+12,'font-family':'DM Mono,monospace','font-size':9,fill:'#e05252',opacity:0.8},svg).textContent='THE AGING BEGINS →';
 
@@ -769,12 +983,13 @@ function buildAgeChart() {
   // Mean
   svgEl('path',{d:makePath('mean'),fill:'none',stroke:'#e2ddd4','stroke-width':2.5},svg);
 
-  // Dots
-  const minPt=ageData.find(d=>d.year===1979), maxPt=ageData[ageData.length-1];
-  svgEl('circle',{cx:xS(1979),cy:yS(minPt.mean),r:4,fill:'#5b8fa8',stroke:'#0c0c0f','stroke-width':1.5},svg);
-  svgEl('circle',{cx:xS(2025),cy:yS(maxPt.mean),r:5,fill:'#e05252',stroke:'#0c0c0f','stroke-width':1.5},svg);
-  svgEl('text',{x:xS(2025)-6,y:yS(maxPt.mean)-12,'text-anchor':'end','font-family':'DM Mono,monospace','font-size':11,'font-weight':'500',fill:'#e05252'},svg).textContent='58.5 (2025)';
-  svgEl('text',{x:xS(1979),y:yS(minPt.mean)+18,'text-anchor':'middle','font-family':'DM Mono,monospace','font-size':10,fill:'#5b8fa8'},svg).textContent='49.0 (1979)';
+  // Notable points
+  const minPt = ageData.reduce((a,b) => b.mean < a.mean ? b : a);
+  const maxPt = ageData[ageData.length-1];
+  svgEl('circle',{cx:xS(minPt.year),cy:yS(minPt.mean),r:4,fill:'#5b8fa8',stroke:'#0c0c0f','stroke-width':1.5},svg);
+  svgEl('circle',{cx:xS(maxPt.year),cy:yS(maxPt.mean),r:5,fill:'#e05252',stroke:'#0c0c0f','stroke-width':1.5},svg);
+  svgEl('text',{x:xS(maxPt.year)-6,y:yS(maxPt.mean)-12,'text-anchor':'end','font-family':'DM Mono,monospace','font-size':11,'font-weight':'500',fill:'#e05252'},svg).textContent=`${maxPt.mean} (${maxPt.year})`;
+  svgEl('text',{x:xS(minPt.year),y:yS(minPt.mean)+18,'text-anchor':'middle','font-family':'DM Mono,monospace','font-size':10,fill:'#5b8fa8'},svg).textContent=`${minPt.mean} (${minPt.year})`;
 
   // Y label
   const yl = svgEl('text',{x:12,y:PAD.top+CH/2,'font-family':'DM Mono,monospace','font-size':10,fill:'#555','text-anchor':'middle',transform:`rotate(-90,12,${PAD.top+CH/2})`},svg);
@@ -783,11 +998,20 @@ function buildAgeChart() {
   svgEl('line',{x1:PAD.left,x2:PAD.left,y1:PAD.top,y2:PAD.top+CH,stroke:'#333','stroke-width':1.5},svg);
   svgEl('line',{x1:PAD.left,x2:PAD.left+CW,y1:PAD.top+CH,y2:PAD.top+CH,stroke:'#333','stroke-width':1.5},svg);
 
+  // Update stat blocks dynamically from data
+  const firstPt = ageData[0];
+  document.getElementById('stat-age-first').textContent = firstPt.mean;
+  document.getElementById('stat-age-first-label').innerHTML = `Mean age in ${firstPt.year}<br>${firstPt.year === 1901 ? '57th' : ''} Congress`;
+  document.getElementById('stat-age-last').textContent = maxPt.mean;
+  document.getElementById('stat-age-last-label').innerHTML = `Mean age in ${maxPt.year}<br>119th Congress`;
+  const diff = (maxPt.mean - firstPt.mean).toFixed(1);
+  document.getElementById('stat-age-diff').textContent = `+${diff} yrs`;
+
   // Tooltip
   const tip = document.getElementById('tooltip');
   svg.addEventListener('mousemove', e => {
     const rect=svg.getBoundingClientRect();
-    const rawYear=1901+(e.clientX-rect.left-PAD.left)/CW*(2025-1901);
+    const rawYear=minYr+(e.clientX-rect.left-PAD.left)/CW*(maxYr-minYr);
     const nearest=ageData.reduce((a,b)=>Math.abs(b.year-rawYear)<Math.abs(a.year-rawYear)?b:a);
     if (Math.abs(xS(nearest.year)-(e.clientX-rect.left)) < 20) {
       tip.style.display='block'; tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY-50)+'px';
@@ -799,31 +1023,11 @@ function buildAgeChart() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   SECTION 3 — AGING IN PLACE
+   SECTION 3 — SNAPSHOTS
 ═══════════════════════════════════════════════════════════ */
-const SNAP_COLORS = { 'G.I.':'#5b8fa8','Silent':'#7fb069','Boomer':'#e8875a','Gen X':'#9b6fa8','Millennial':'#e8c84a' };
-const SNAP_CONTEXT = {
-  1965:'Vietnam era<br>G.I. Generation peak',
-  1985:'Cold War<br>Silent takes over',
-  2005:'Post-9/11<br>Boomer majority begins',
-  2025:"Today<br>Boomers still won't leave",
-};
-const SNAP_DATA = {
-  congress: {
-    1965:[{gen:'G.I.',n:480,age:51.8,pct:80.5},{gen:'Silent',n:116,age:36.5,pct:19.5}],
-    1985:[{gen:'G.I.',n:121,age:66.7,pct:18.4},{gen:'Silent',n:390,age:51.0,pct:59.8},{gen:'Boomer',n:145,age:38.1,pct:21.6}],
-    2005:[{gen:'G.I.',n:9,age:82.2,pct:1.4},{gen:'Silent',n:163,age:68.1,pct:24.8},{gen:'Boomer',n:408,age:54.3,pct:61.8},{gen:'Gen X',n:80,age:40.0,pct:12.1}],
-    2025:[{gen:'Silent',n:14,age:85.8,pct:2.3},{gen:'Boomer',n:209,age:72.1,pct:33.8},{gen:'Gen X',n:327,age:54.5,pct:52.9},{gen:'Millennial',n:68,age:39.1,pct:11.0}],
-  },
-  senate: {
-    1965:[{gen:'G.I.',n:72,age:53.9,pct:87.8},{gen:'Silent',n:10,age:37.9,pct:12.2}],
-    1985:[{gen:'G.I.',n:35,age:66.9,pct:28.7},{gen:'Silent',n:75,age:51.4,pct:61.5},{gen:'Boomer',n:12,age:39.2,pct:9.8}],
-    2005:[{gen:'G.I.',n:6,age:82.7,pct:4.9},{gen:'Silent',n:44,age:68.7,pct:36.1},{gen:'Boomer',n:67,age:54.6,pct:54.9},{gen:'Gen X',n:5,age:43.0,pct:4.1}],
-    2025:[{gen:'Silent',n:3,age:86.3,pct:2.7},{gen:'Boomer',n:61,age:72.2,pct:54.5},{gen:'Gen X',n:43,age:55.8,pct:38.4},{gen:'Millennial',n:5,age:41.0,pct:4.5}],
-  },
-};
+let currentTab = 'Full Congress';
+let snapData = null;
 
-let currentTab = 'congress';
 function switchTab(tab, e) {
   currentTab = tab;
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -834,9 +1038,9 @@ function switchTab(tab, e) {
 function renderSnapshots() {
   const grid = document.getElementById('snapshot-grid');
   grid.innerHTML = '';
-  for (const snap of [1965,1985,2005,2025]) {
-    const rows = SNAP_DATA[currentTab][snap];
-    const isToday = snap===2025;
+  for (const snap of SNAP_YEARS) {
+    const rows = (snapData[currentTab][snap] || []);
+    const isToday = snap === 2025;
     const totalSeats = rows.reduce((s,r) => s+r.n, 0);
     const card = document.createElement('div');
     card.className = 'snapshot-card';
@@ -845,19 +1049,20 @@ function renderSnapshots() {
     grid.appendChild(card);
     const wrap = card.querySelector(`#rows-${snap}`);
     for (const row of rows) {
-      const c=SNAP_COLORS[row.gen]||'#888';
-      const highlight=row.gen==='Boomer'&&isToday;
-      const seatPct=(row.n/totalSeats*100);
-      const div=document.createElement('div');
+      const c = SNAP_COLORS[row.gen] || '#888';
+      const displayName = SNAP_DISPLAY_NAMES[row.gen] || row.gen;
+      const highlight = row.gen === 'Baby Boom Generation' && isToday;
+      const seatPct = totalSeats > 0 ? (row.n / totalSeats * 100) : row.pct;
+      const div = document.createElement('div');
       div.className='gen-row';
       div.innerHTML=`
         <div class="gen-dot" style="background:${c}${highlight?';box-shadow:0 0 6px '+c:''}"></div>
         <div class="gen-info">
-          <div class="gen-label" style="${highlight?'color:'+c:''}">${row.gen}${highlight?' ↑':''}</div>
+          <div class="gen-label" style="${highlight?'color:'+c:''}">${displayName}${highlight?' ↑':''}</div>
           <div class="gen-bars">
             <div class="bar-row">
               <div class="bar-label">Age</div>
-              <div class="bar-track"><div class="bar-fill" style="width:${Math.min(row.age/90*100,100)}%;background:${c};opacity:0.9"><div class="bar-val">${row.age.toFixed(1)}</div></div></div>
+              <div class="bar-track"><div class="bar-fill" style="width:${Math.min((row.age||0)/90*100,100)}%;background:${c};opacity:0.9"><div class="bar-val">${row.age != null ? row.age.toFixed(1) : '—'}</div></div></div>
             </div>
             <div class="bar-row">
               <div class="bar-label" style="font-size:7px">Seats</div>
@@ -871,39 +1076,14 @@ function renderSnapshots() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   SECTION 0 — WORKFORCE COMPARISON (BLS)
+   SECTION 0 — BLS CHART
 ═══════════════════════════════════════════════════════════ */
-const BLS_GENS = ['Gen Z','Millennial','Gen X','Boomer','Silent'];
-const BLS_COLORS = {
-  'Gen Z':      '#9b6fa8',
-  'Millennial': '#7fb069',
-  'Gen X':      '#5b8fa8',
-  'Boomer':     '#e8875a',
-  'Silent':     '#8a8070',
-};
-
-const BLS_ROWS = [
-  { label: 'Elected Officials',  vals: [0,  11, 54, 33,  2], isElected: true },
-  { label: 'All Workers',        vals: [5,  49, 39,  6,  1], isAllWorkers: true },
-  { label: 'Agriculture',        vals: [3,  40, 39, 10,  8] },
-  { label: 'Professional Svc',   vals: [3,  50, 39,  6,  2] },
-  { label: 'Wholesale Trade',    vals: [7,  52, 34,  5,  2] },
-  { label: 'Mining',             vals: [3,  51, 39,  6,  1] },
-  { label: 'Education & Health', vals: [3,  48, 41,  7,  1] },
-  { label: 'Gov\'t Workers',     vals: [3,  46, 45,  5,  1] },
-  { label: 'Information/Tech',   vals: [3,  52, 38,  6,  1] },
-  { label: 'Manufacturing',      vals: [4,  47, 44,  4,  1] },
-  { label: 'Finance',            vals: [4,  49, 42,  4,  1] },
-  { label: 'Construction',       vals: [4,  50, 40,  5,  1] },
-  { label: 'Leisure & Hosp.',    vals: [10, 59, 26,  4,  1] },
-];
-
-function buildBLSChart() {
+function buildBLSChart(blsRows) {
   const svg = document.getElementById('chart-bls');
   const W = svg.parentElement.offsetWidth;
   const ROW_H = 30, ROW_GAP = 6;
   const LABEL_W = 148, PAD = { top: 8, right: 16, bottom: 36, left: 0 };
-  const H = PAD.top + BLS_ROWS.length * (ROW_H + ROW_GAP) - ROW_GAP + PAD.bottom + 8;
+  const H = PAD.top + blsRows.length * (ROW_H + ROW_GAP) - ROW_GAP + PAD.bottom + 8;
   svg.setAttribute('height', H);
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   svg.setAttribute('width', W);
@@ -917,7 +1097,7 @@ function buildBLSChart() {
   }
   svgEl('text', { x: LABEL_W + BAR_W / 2, y: H - 4, 'text-anchor': 'middle', 'font-family': 'DM Mono,monospace', 'font-size': 9, fill: '#444', 'letter-spacing': '0.1em' }, svg).textContent = 'GENERATIONAL SHARE (%)';
 
-  BLS_ROWS.forEach((row, i) => {
+  blsRows.forEach((row, i) => {
     const y = PAD.top + i * (ROW_H + ROW_GAP);
     if (row.isElected)    svgEl('rect', { x: LABEL_W, y: y-2, width: BAR_W, height: ROW_H+4, fill: '#e8875a', opacity: 0.06, rx: 2 }, svg);
     if (row.isAllWorkers) svgEl('rect', { x: LABEL_W, y: y-2, width: BAR_W, height: ROW_H+4, fill: '#e2ddd4', opacity: 0.03, rx: 2 }, svg);
@@ -932,7 +1112,7 @@ function buildBLSChart() {
 
     let xCursor = 0;
     row.vals.forEach((pct, gi) => {
-      if (pct === 0) { xCursor += pct; return; }
+      if (!pct || pct <= 0) { xCursor += (pct||0); return; }
       const color = BLS_COLORS[BLS_GENS[gi]];
       const bx = xS(xCursor), bw = (pct / 100) * BAR_W;
       svgEl('rect', { x: bx, y: y+2, width: bw, height: ROW_H-4, fill: color, opacity: row.isElected ? 0.9 : 0.65, rx: 1 }, svg);
@@ -961,15 +1141,56 @@ function buildBLSChart() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   INIT
+   MAIN — LOAD DATA AND RENDER
 ═══════════════════════════════════════════════════════════ */
-buildBLSChart();
-buildEraBar();
-buildRFChart('chart-congress', congressData, 260);
-buildRFChart('chart-senate', senateData, 220);
-buildGenLegend();
-buildAgeChart();
-renderSnapshots();
+async function main() {
+  try {
+    setLoadingProgress(10, 'Loading congress history…');
+    const [historicalCSV, snapshotsCSV, blsCSV] = await Promise.all([
+      loadCSV('data/congress_historical.csv'),
+      loadCSV('data/congress_snapshots_detail.csv'),
+      loadCSV('data/bls_gen_comparison.csv'),
+    ]);
+
+    setLoadingProgress(70, 'Building charts…');
+
+    // Derive chart data from CSVs
+    const { rfYears, congressData, senateData } = buildRFData(historicalCSV);
+    const ageData = buildAgeData(historicalCSV);
+    snapData = buildSnapData(snapshotsCSV);
+    const blsRows = buildBLSRows(blsCSV);
+
+    setLoadingProgress(85, 'Rendering…');
+
+    // Render everything
+    buildBLSChart(blsRows);
+    buildEraBar();
+    buildRFChart('chart-congress', rfYears, congressData, 260);
+    buildRFChart('chart-senate', rfYears, senateData, 220);
+    buildGenLegend();
+    buildAgeChart(ageData);
+    renderSnapshots();
+
+    setLoadingProgress(100, 'Done.');
+    await new Promise(r => setTimeout(r, 300));
+    const overlay = document.getElementById('loading-overlay');
+    overlay.classList.add('hidden');
+    setTimeout(() => overlay.remove(), 600);
+
+  } catch (err) {
+    console.error('GenGov data load error:', err);
+    document.getElementById('loading-label').textContent = 'Error loading data — see console.';
+    document.getElementById('loading-label').style.color = '#e05252';
+
+    // Hint: GitHub Pages requires the CSV files to be in the repo
+    const hint = document.createElement('div');
+    hint.style.cssText = 'font-family:DM Mono,monospace;font-size:9px;color:#555;margin-top:16px;text-align:center;max-width:340px;line-height:1.7;';
+    hint.textContent = 'Make sure data/congress_historical.csv, data/congress_snapshots_detail.csv, and data/bls_gen_comparison.csv are committed to the repo and accessible at the same path.';
+    document.getElementById('loading-overlay').appendChild(hint);
+  }
+}
+
+main();
 </script>
 </body>
 </html>
