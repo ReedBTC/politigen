@@ -29,6 +29,7 @@ politigen/
 │   │                                 #          pct_gen_x_13ers,
 │   │                                 #          pct_millennial_generation,
 │   │                                 #          senate_pct_* (same cols for Senate only)
+│   │                                 #          house_pct_*  (same cols for House only)
 │   │                                 # Feeds: Section 1 (Rise & Fall) and
 │   │                                 #        Section 2 (Age Trend)
 │   │
@@ -36,25 +37,30 @@ politigen/
 │   │                                 # Columns: year, chamber, generation, gen_key,
 │   │                                 #          n, mean_age, pct
 │   │                                 # Years: 1965, 1985, 2005, 2025
-│   │                                 # Chambers: Full Congress, Senate
+│   │                                 # Chambers: House, Senate
 │   │                                 # Generations: Progressive, Missionary, Lost (where
 │   │                                 #   present), G.I., Silent, Boomer, Gen X, Millennial
 │   │                                 # Feeds: Section 3 (Snapshots)
 │   │
-│   └── bls_gen_comparison.csv        # Generational share % by industry sector
-│                                     # plus an Elected Officials row.
-│                                     # Columns: sector, is_elected, is_all_workers,
-│                                     #          pct_under_25, pct_25_44,
-│                                     #          pct_45_64, pct_65_plus,
-│                                     #          pct_genz, pct_millennial,
-│                                     #          pct_genx, pct_boomer, pct_silent
-│                                     # Feeds: Section 0 (Workforce Comparison)
+│   ├── bls_gen_comparison.csv        # Generational share % by industry sector
+│   │                                 # plus a Congress row.
+│   │                                 # Columns: sector, is_elected, is_all_workers,
+│   │                                 #          pct_under_25, pct_25_44,
+│   │                                 #          pct_45_64, pct_65_plus,
+│   │                                 #          pct_genz, pct_millennial,
+│   │                                 #          pct_genx, pct_boomer, pct_silent
+│   │                                 # Feeds: Section 0 (Workforce Comparison)
+│   │
+│   └── presidents.csv                # One row per presidential term start since 1901.
+│                                     # Columns: year, name, birth_year, generation, how
+│                                     # 'how' is 'elected' or 'succession'
+│                                     # Feeds: Section 1 (Rise & Fall — dots on curves)
 │
 └── index.html                   # The visualization. One self-contained file.
                                  # Served via GitHub Pages from repo root.
                                  # Loads all data from data/ CSVs at runtime via fetch().
-                                 # No build step — open index.html or deploy to any
-                                 # static host and it works.
+                                 # No build step — deploy to any static host and it works.
+                                 # Requires a server (fetch() is blocked on file://).
 ```
 
 ## Quick Start
@@ -112,6 +118,7 @@ unitedstates/congress-legislators (GitHub)
     └── legislators-current.json     ─┴─► collect_politigen.py ──► data/congress_historical.csv
                                                                  ──► data/congress_snapshots_detail.csv
                                                                  ──► data/bls_gen_comparison.csv
+                                                                 ──► data/presidents.csv
 BLS.gov (CPS Table 18b Excel)
     └── cpsaat18b.xlsx ───────────────────► collect_politigen.py ──► data/bls_gen_comparison.csv
 
