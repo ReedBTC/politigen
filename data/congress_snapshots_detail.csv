@@ -1,8 +1,13 @@
 year,chamber,generation,gen_key,n,mean_age,pct
+1965,Full Congress,Missionary Generation,missionary,4,85.0,0.6
+1965,Full Congress,Lost Generation,lost,116,68.9,16.0
 1965,Full Congress,G.I. Generation,gi,492,50.8,68.0
 1965,Full Congress,Silent Generation,silent,111,35.8,15.3
+1965,Senate,Missionary Generation,missionary,1,87.0,0.9
+1965,Senate,Lost Generation,lost,34,69.2,29.1
 1965,Senate,G.I. Generation,gi,72,53.1,61.5
 1965,Senate,Silent Generation,silent,10,36.9,8.5
+1985,Full Congress,Lost Generation,lost,1,84.0,0.2
 1985,Full Congress,G.I. Generation,gi,122,65.8,18.4
 1985,Full Congress,Silent Generation,silent,396,50.0,59.8
 1985,Full Congress,Baby Boom Generation,boomer,143,37.1,21.6

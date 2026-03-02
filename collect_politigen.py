@@ -1,5 +1,5 @@
 """
-GenGov Data Collector
+Politigen Data Collector
 Generates all data needed by politigen.html.
 
 Run from the repo root:
@@ -19,20 +19,22 @@ import pandas as pd
 from datetime import date
 
 # ── OUTPUT DIRECTORY ──────────────────────────────────────────────────────────
-# All CSVs go into data/, relative to wherever this script is run from.
-# Running from repo root (python collect_politigen.py) puts them in data/.
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 os.makedirs(DATA_DIR, exist_ok=True)
 
 # ── GENERATIONAL CUTOFFS (Strauss-Howe) ───────────────────────────────────────
+# "Pre-G.I." is retained as a fallback for anyone born before 1843.
 GENERATIONS = [
-    ("Pre-G.I.",             1800, 1900),
-    ("G.I. Generation",      1901, 1924),
-    ("Silent Generation",    1925, 1942),
-    ("Baby Boom Generation", 1943, 1960),
-    ("Gen X (13ers)",        1961, 1981),
-    ("Millennial Generation",1982, 2005),
-    ("Gen Z",                2006, 2029),
+    ("Pre-G.I.",               1800, 1842),   # fallback only; very rare in 1901+ Congress
+    ("Progressive Generation", 1843, 1859),
+    ("Missionary Generation",  1860, 1882),
+    ("Lost Generation",        1883, 1900),
+    ("G.I. Generation",        1901, 1924),
+    ("Silent Generation",      1925, 1942),
+    ("Baby Boom Generation",   1943, 1960),
+    ("Gen X (13ers)",          1961, 1981),
+    ("Millennial Generation",  1982, 2005),
+    ("Gen Z",                  2006, 2029),
 ]
 
 def classify_generation(birth_year):
@@ -130,8 +132,12 @@ member_df = member_df.drop_duplicates(subset=["congress", "name", "chamber"])
 print(f"  → {len(member_df):,} member-congress records")
 
 # ── Summary row per Congress ───────────────────────────────────────────────────
+# All generations tracked in historical CSV (Pre-G.I. kept for completeness)
 TRACKED_GENS = [
     "Pre-G.I.",
+    "Progressive Generation",
+    "Missionary Generation",
+    "Lost Generation",
     "G.I. Generation",
     "Silent Generation",
     "Baby Boom Generation",
@@ -177,10 +183,22 @@ for cn, grp in member_df.groupby("congress"):
 hist_df = pd.DataFrame(snapshots).sort_values("year")
 
 # ── Snapshot detail rows  (Section 3 cards: 1965 / 1985 / 2005 / 2025) ────────
-SNAP_YEARS    = [1965, 1985, 2005, 2025]
-SNAP_GENS     = ["G.I. Generation", "Silent Generation",
-                 "Baby Boom Generation", "Gen X (13ers)", "Millennial Generation"]
-SNAP_GEN_KEYS = ["gi", "silent", "boomer", "genx", "millennial"]
+SNAP_YEARS = [1965, 1985, 2005, 2025]
+
+# Progressive and Missionary are included so the script captures them if present,
+# but they will almost certainly be zero by 1965. Lost Gen (born 1883–1900) will
+# be ages 65–82 in 1965 — a small but real cohort.
+SNAP_GENS = [
+    "Progressive Generation",
+    "Missionary Generation",
+    "Lost Generation",
+    "G.I. Generation",
+    "Silent Generation",
+    "Baby Boom Generation",
+    "Gen X (13ers)",
+    "Millennial Generation",
+]
+SNAP_GEN_KEYS = ["progressive", "missionary", "lost", "gi", "silent", "boomer", "genx", "millennial"]
 
 snap_rows = []
 for year in SNAP_YEARS:
@@ -217,6 +235,13 @@ snap_df.to_csv(os.path.join(DATA_DIR, "congress_snapshots_detail.csv"), index=Fa
 print(f"\n✅ data/congress_historical.csv        — {len(hist_df)} rows")
 print(f"✅ data/congress_snapshots_detail.csv  — {len(snap_df)} rows")
 
+# Quick sanity check on the new generations
+print("\n── Sanity check: new pre-G.I. generations (Full Congress) ──")
+for g in ["Progressive Generation", "Missionary Generation", "Lost Generation"]:
+    key = f"pct_{safe_key(g)}"
+    peak_row = hist_df.loc[hist_df[key].idxmax()]
+    print(f"  {g}: peak {peak_row[key]:.1f}% in {int(peak_row['year'])}")
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PART 2: BLS WORKFORCE COMPARISON  (HTML section 0)
@@ -226,7 +251,6 @@ print("\n" + "=" * 60)
 print("PART 2: BLS workforce generational comparison")
 print("=" * 60)
 
-# BLS sector search string → display label
 SECTORS = {
     "Total, 16 years":           "All Workers",
     "Agriculture":               "Agriculture",
@@ -252,7 +276,6 @@ print(f"  → {len(resp.content) / 1024:.0f} KB downloaded")
 
 raw = pd.read_excel(io.BytesIO(resp.content), sheet_name=0, header=None)
 
-# Auto-detect header row
 header_row = None
 for i, row in raw.iterrows():
     rs = " ".join([str(v) for v in row])
@@ -293,15 +316,6 @@ def pct_of_total(row, col):
         return 0
 
 def bls_to_gen_shares(under25, a2544, a4564, a65plus):
-    """
-    Approximate generational shares from BLS 10-year age brackets.
-    Birth-year ↔ age-in-2025 mapping:
-      Gen Z (2006+):      ~30% of the under-25 bracket
-      Millennial (82-05): rest of under-25 + most of 25-44
-      Gen X (61-81):      tail of 25-44 + most of 45-64
-      Boomer (43-60):     tail of 45-64 + younger 65+
-      Silent (25-42):     older 65+
-    """
     genz       = under25  * 0.300
     millennial = under25  * 0.700 + a2544 * 0.900
     genx       = a2544    * 0.100 + a4564 * 0.950
@@ -354,9 +368,16 @@ for leg in curr:
         continue
     total_off += 1
     key_map = {
-        "Gen Z": "genz", "Millennial Generation": "millennial",
-        "Gen X (13ers)": "genx", "Baby Boom Generation": "boomer",
-        "Silent Generation": "silent", "Pre-G.I.": "pregi",
+        "Gen Z":                  "genz",
+        "Millennial Generation":  "millennial",
+        "Gen X (13ers)":          "genx",
+        "Baby Boom Generation":   "boomer",
+        "Silent Generation":      "silent",
+        # Lost/Missionary/Progressive all fold into the pre-Boomer bucket for BLS chart
+        "Lost Generation":        "pregi",
+        "Missionary Generation":  "pregi",
+        "Progressive Generation": "pregi",
+        "Pre-G.I.":               "pregi",
     }
     if gen in key_map:
         off_gens[key_map[gen]] += 1
