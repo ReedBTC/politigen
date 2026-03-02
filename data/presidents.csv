@@ -1,0 +1,37 @@
+year,name,birth_year,generation,how
+1901,T. Roosevelt,1858,Progressive Generation,succession
+1905,T. Roosevelt,1858,Progressive Generation,elected
+1909,Taft,1857,Progressive Generation,elected
+1913,Wilson,1856,Progressive Generation,elected
+1917,Wilson,1856,Progressive Generation,elected
+1921,Harding,1865,Missionary Generation,elected
+1923,Coolidge,1872,Missionary Generation,succession
+1925,Coolidge,1872,Missionary Generation,elected
+1929,Hoover,1874,Missionary Generation,elected
+1933,F. Roosevelt,1882,Missionary Generation,elected
+1937,F. Roosevelt,1882,Missionary Generation,elected
+1941,F. Roosevelt,1882,Missionary Generation,elected
+1945,F. Roosevelt,1882,Missionary Generation,elected
+1945,Truman,1884,Lost Generation,succession
+1949,Truman,1884,Lost Generation,elected
+1953,Eisenhower,1890,Lost Generation,elected
+1957,Eisenhower,1890,Lost Generation,elected
+1961,Kennedy,1917,G.I. Generation,elected
+1963,Johnson,1908,G.I. Generation,succession
+1965,Johnson,1908,G.I. Generation,elected
+1969,Nixon,1913,G.I. Generation,elected
+1973,Nixon,1913,G.I. Generation,elected
+1974,Ford,1913,G.I. Generation,succession
+1977,Carter,1924,G.I. Generation,elected
+1981,Reagan,1911,G.I. Generation,elected
+1985,Reagan,1911,G.I. Generation,elected
+1989,G.H.W. Bush,1924,G.I. Generation,elected
+1993,Clinton,1946,Baby Boom Generation,elected
+1997,Clinton,1946,Baby Boom Generation,elected
+2001,G.W. Bush,1946,Baby Boom Generation,elected
+2005,G.W. Bush,1946,Baby Boom Generation,elected
+2009,Obama,1961,Gen X (13ers),elected
+2013,Obama,1961,Gen X (13ers),elected
+2017,Trump,1946,Baby Boom Generation,elected
+2021,Biden,1942,Silent Generation,elected
+2025,Trump,1946,Baby Boom Generation,elected
