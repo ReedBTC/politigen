@@ -621,9 +621,9 @@ const GEN_SHORT = {
   'Millennial Generation':  'Millennial',
 };
 const COLORS = {
-  'Progressive Generation': '#b8956a',
-  'Missionary Generation':  '#c9a87c',
-  'Lost Generation':        '#a07840',
+  'Progressive Generation': '#c4956a',  // warm tan/earthy
+  'Missionary Generation':  '#6a9bb5',  // muted steel blue
+  'Lost Generation':        '#b5736a',  // dusty brick red
   'G.I. Generation':        '#5b8fa8',
   'Silent Generation':      '#7fb069',
   'Baby Boom Generation':   '#e8875a',
@@ -655,9 +655,9 @@ const SENATE_COL_TO_GEN = {
 
 // Dominant-generation era bar labels
 const ERAS = [
-  { label:'PROGRESSIVE', color:'#b8956a', start:1901, end:1912 },
-  { label:'MISSIONARY',  color:'#c9a87c', start:1913, end:1934 },
-  { label:'LOST',        color:'#a07840', start:1935, end:1954 },
+  { label:'PROGRESSIVE', color:'#c4956a', start:1901, end:1912 },
+  { label:'MISSIONARY',  color:'#6a9bb5', start:1913, end:1934 },
+  { label:'LOST',        color:'#b5736a', start:1935, end:1954 },
   { label:'G.I.',        color:'#5b8fa8', start:1955, end:1975 },
   { label:'SILENT',      color:'#7fb069', start:1977, end:1991 },
   { label:'BOOMER',      color:'#e8875a', start:1993, end:2025 },
@@ -908,8 +908,8 @@ function renderSnapshots() {
     grid.appendChild(card);
 
     const wrap = card.querySelector(`#snap-rows-${snapYear}`);
-    // Sort by pct descending so dominant gen is always first
-    const sorted = [...rows].sort((a,b) => b.pct - a.pct);
+    // Sort by generation order — oldest at top, youngest at bottom
+    const sorted = [...rows].sort((a,b) => GENS.indexOf(a.generation) - GENS.indexOf(b.generation));
 
     for (const row of sorted) {
       const c = COLORS[row.generation] || '#888';
