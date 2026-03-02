@@ -658,13 +658,15 @@ const SENATE_COL_TO_GEN = {
 };
 
 // Dominant-generation era bar labels
+// Start/end = when generation first crossed / dropped below 50% of Full Congress
 const ERAS = [
   { label:'PROGRESSIVE', color:'#4a7a9b', start:1901, end:1912 },
   { label:'MISSIONARY',  color:'#d4693a', start:1913, end:1934 },
   { label:'LOST',        color:'#b08ac8', start:1935, end:1954 },
   { label:'G.I.',        color:'#f0d060', start:1955, end:1975 },
   { label:'SILENT',      color:'#6a9ab8', start:1977, end:1991 },
-  { label:'BOOMER',      color:'#e8875a', start:1993, end:2025 },
+  { label:'BOOMER',      color:'#e8875a', start:1993, end:2021 },
+  { label:'GEN X',       color:'#9b6fa8', start:2023, end:2025 },
 ];
 
 const SNAP_CONTEXT = {
@@ -718,15 +720,15 @@ function buildRFChart(svgId, histRows, colMap, height, presRows) {
 
   // Grid
   for (const gv of [0,25,50,75,100]) {
-    svgEl('line',{x1:PAD.left,x2:PAD.left+CW,y1:yS(gv),y2:yS(gv),stroke:gv===0?'#333':'#1e1e26','stroke-width':gv===0?1.5:1},svg);
-    svgEl('text',{x:PAD.left-5,y:yS(gv)+4,'text-anchor':'end','font-family':'DM Mono,monospace','font-size':9,fill:'#555'},svg).textContent=gv+'%';
+    svgEl('line',{x1:PAD.left,x2:PAD.left+CW,y1:yS(gv),y2:yS(gv),stroke:gv===0?'#444':'#1e1e26','stroke-width':gv===0?1.5:1},svg);
+    svgEl('text',{x:PAD.left-5,y:yS(gv)+4,'text-anchor':'end','font-family':'DM Mono,monospace','font-size':9,fill:'#666'},svg).textContent=gv+'%';
   }
   for (const yr of [1901,1920,1940,1960,1980,2000,2020]) {
     svgEl('line',{x1:xS(yr),x2:xS(yr),y1:PAD.top+CH,y2:PAD.top+CH+4,stroke:'#444','stroke-width':1},svg);
-    svgEl('text',{x:xS(yr),y:PAD.top+CH+14,'text-anchor':'middle','font-family':'DM Mono,monospace','font-size':9,fill:'#555'},svg).textContent=yr;
+    svgEl('text',{x:xS(yr),y:PAD.top+CH+14,'text-anchor':'middle','font-family':'DM Mono,monospace','font-size':9,fill:'#666'},svg).textContent=yr;
   }
-  svgEl('line',{x1:PAD.left,x2:PAD.left,y1:PAD.top,y2:PAD.top+CH,stroke:'#333','stroke-width':1.5},svg);
-  svgEl('line',{x1:PAD.left,x2:PAD.left+CW,y1:PAD.top+CH,y2:PAD.top+CH,stroke:'#333','stroke-width':1.5},svg);
+  svgEl('line',{x1:PAD.left,x2:PAD.left,y1:PAD.top,y2:PAD.top+CH,stroke:'#444','stroke-width':1.5},svg);
+  svgEl('line',{x1:PAD.left,x2:PAD.left+CW,y1:PAD.top+CH,y2:PAD.top+CH,stroke:'#444','stroke-width':1.5},svg);
 
   // One curve per generation
   for (const gen of GENS) {
@@ -846,9 +848,7 @@ function buildEraBar(histRows) {
       svgEl('text',{x:(x1+x2)/2,y:16.5,'text-anchor':'middle','font-family':'DM Mono,monospace','font-size':8,'font-weight':'500',fill:'#0c0c0f'},svg).textContent=era.label;
     }
   }
-  // Gen X rising annotation
-  const x1 = x(2011);
-  svgEl('text',{x:x1,y:16.5,'font-family':'DM Mono,monospace','font-size':9,fill:'#9b6fa8',opacity:0.8},svg).textContent='← GEN X RISING';
+
 }
 
 function buildGenLegend() {
