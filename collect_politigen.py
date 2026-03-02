@@ -1,6 +1,6 @@
 """
 Politigen Data Collector
-Generates all data needed by politigen.html.
+Generates all data needed by index.html.
 
 Run from the repo root:
     python collect_politigen.py
@@ -10,6 +10,7 @@ Outputs (written to data/):
                                          generational %, mean/median age, senate/house age
     data/congress_snapshots_detail.csv — per-generation stats at 4 snapshot years
     data/bls_gen_comparison.csv        — generational share % by BLS sector + officials
+    data/presidents.csv                — one row per presidential term start since 1901
 """
 
 import io
@@ -23,9 +24,8 @@ DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 os.makedirs(DATA_DIR, exist_ok=True)
 
 # ── GENERATIONAL CUTOFFS (Strauss-Howe) ───────────────────────────────────────
-# "Pre-G.I." is retained as a fallback for anyone born before 1843.
 GENERATIONS = [
-    ("Pre-G.I.",               1800, 1842),   # fallback only; very rare in 1901+ Congress
+    ("Pre-G.I.",               1800, 1842),   # fallback only
     ("Progressive Generation", 1843, 1859),
     ("Missionary Generation",  1860, 1882),
     ("Lost Generation",        1883, 1900),
@@ -103,7 +103,7 @@ for leg in all_legs:
     fname = f"{name.get('first','')} {name.get('last','')}".strip()
 
     for term in leg.get("terms", []):
-        chamber   = term.get("type", "")       # 'sen' or 'rep'
+        chamber   = term.get("type", "")
         start_str = term.get("start", "")
         end_str   = term.get("end", "")
         if not start_str:
@@ -132,7 +132,6 @@ member_df = member_df.drop_duplicates(subset=["congress", "name", "chamber"])
 print(f"  → {len(member_df):,} member-congress records")
 
 # ── Summary row per Congress ───────────────────────────────────────────────────
-# All generations tracked in historical CSV (Pre-G.I. kept for completeness)
 TRACKED_GENS = [
     "Pre-G.I.",
     "Progressive Generation",
@@ -182,12 +181,9 @@ for cn, grp in member_df.groupby("congress"):
 
 hist_df = pd.DataFrame(snapshots).sort_values("year")
 
-# ── Snapshot detail rows  (Section 3 cards: 1965 / 1985 / 2005 / 2025) ────────
+# ── Snapshot detail rows ────────────────────────────────────────────────────────
 SNAP_YEARS = [1965, 1985, 2005, 2025]
 
-# Progressive and Missionary are included so the script captures them if present,
-# but they will almost certainly be zero by 1965. Lost Gen (born 1883–1900) will
-# be ages 65–82 in 1965 — a small but real cohort.
 SNAP_GENS = [
     "Progressive Generation",
     "Missionary Generation",
@@ -235,8 +231,7 @@ snap_df.to_csv(os.path.join(DATA_DIR, "congress_snapshots_detail.csv"), index=Fa
 print(f"\n✅ data/congress_historical.csv        — {len(hist_df)} rows")
 print(f"✅ data/congress_snapshots_detail.csv  — {len(snap_df)} rows")
 
-# Quick sanity check on the new generations
-print("\n── Sanity check: new pre-G.I. generations (Full Congress) ──")
+print("\n── Sanity check: generations (Full Congress) ──")
 for g in ["Progressive Generation", "Missionary Generation", "Lost Generation"]:
     key = f"pct_{safe_key(g)}"
     peak_row = hist_df.loc[hist_df[key].idxmax()]
@@ -357,7 +352,7 @@ for search, label in SECTORS.items():
     })
     print(f"  ✓ {label}")
 
-# ── Elected officials row (exact birth dates from legislators-current.json) ────
+# ── Elected officials row ──────────────────────────────────────────────────────
 off_gens   = {"genz": 0, "millennial": 0, "genx": 0, "boomer": 0, "silent": 0, "pregi": 0}
 total_off  = 0
 
@@ -373,7 +368,6 @@ for leg in curr:
         "Gen X (13ers)":          "genx",
         "Baby Boom Generation":   "boomer",
         "Silent Generation":      "silent",
-        # Lost/Missionary/Progressive all fold into the pre-Boomer bucket for BLS chart
         "Lost Generation":        "pregi",
         "Missionary Generation":  "pregi",
         "Progressive Generation": "pregi",
@@ -407,6 +401,94 @@ print(f"\n✅ data/bls_gen_comparison.csv  — {len(bls_df)} rows")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# PART 3: PRESIDENTS  (HTML section 1 — dots on Rise & Fall curves)
+# ══════════════════════════════════════════════════════════════════════════════
+
+print("\n" + "=" * 60)
+print("PART 3: Presidential terms since 1901")
+print("=" * 60)
+
+# One row per term start (including succession).
+# Birth years sourced from historical record — fully static data.
+# Display names: last name only, except Roosevelt and Bush which need
+# disambiguation via initials.
+#
+# year        = year they took office (inauguration or succession)
+# name        = display name for tooltip
+# birth_year  = used to derive generation via classify_generation()
+# how         = 'elected' | 'succession' — informational, not used in chart yet
+
+PRESIDENT_DATA = [
+    # --- Progressive Generation (born 1843–1859) ---
+    {"year": 1901, "name": "T. Roosevelt",  "birth_year": 1858, "how": "succession"},  # McKinley assassinated
+    {"year": 1905, "name": "T. Roosevelt",  "birth_year": 1858, "how": "elected"},
+    {"year": 1909, "name": "Taft",          "birth_year": 1857, "how": "elected"},
+    {"year": 1913, "name": "Wilson",        "birth_year": 1856, "how": "elected"},
+    {"year": 1917, "name": "Wilson",        "birth_year": 1856, "how": "elected"},
+
+    # --- Missionary Generation (born 1860–1882) ---
+    {"year": 1921, "name": "Harding",       "birth_year": 1865, "how": "elected"},
+    {"year": 1923, "name": "Coolidge",      "birth_year": 1872, "how": "succession"},  # Harding died
+    {"year": 1925, "name": "Coolidge",      "birth_year": 1872, "how": "elected"},
+    {"year": 1929, "name": "Hoover",        "birth_year": 1874, "how": "elected"},
+    {"year": 1933, "name": "F. Roosevelt",  "birth_year": 1882, "how": "elected"},
+    {"year": 1937, "name": "F. Roosevelt",  "birth_year": 1882, "how": "elected"},
+    {"year": 1941, "name": "F. Roosevelt",  "birth_year": 1882, "how": "elected"},
+    {"year": 1945, "name": "F. Roosevelt",  "birth_year": 1882, "how": "elected"},  # died same year
+
+    # --- G.I. Generation (born 1901–1924) ---
+    {"year": 1945, "name": "Truman",        "birth_year": 1884, "how": "succession"},  # FDR died — Truman born 1884 = Lost Gen actually
+    {"year": 1949, "name": "Truman",        "birth_year": 1884, "how": "elected"},
+    {"year": 1953, "name": "Eisenhower",    "birth_year": 1890, "how": "elected"},
+    {"year": 1957, "name": "Eisenhower",    "birth_year": 1890, "how": "elected"},
+    {"year": 1961, "name": "Kennedy",       "birth_year": 1917, "how": "elected"},
+    {"year": 1963, "name": "Johnson",       "birth_year": 1908, "how": "succession"},  # JFK assassinated
+    {"year": 1965, "name": "Johnson",       "birth_year": 1908, "how": "elected"},
+    {"year": 1969, "name": "Nixon",         "birth_year": 1913, "how": "elected"},
+    {"year": 1973, "name": "Nixon",         "birth_year": 1913, "how": "elected"},
+    {"year": 1974, "name": "Ford",          "birth_year": 1913, "how": "succession"},  # Nixon resigned
+    {"year": 1977, "name": "Carter",        "birth_year": 1924, "how": "elected"},
+    {"year": 1981, "name": "Reagan",        "birth_year": 1911, "how": "elected"},
+    {"year": 1985, "name": "Reagan",        "birth_year": 1911, "how": "elected"},
+
+    # --- Silent Generation (born 1925–1942) ---
+    {"year": 1989, "name": "G.H.W. Bush",  "birth_year": 1924, "how": "elected"},  # born 1924 = G.I. actually
+    {"year": 1993, "name": "Clinton",       "birth_year": 1946, "how": "elected"},  # Boomer
+
+    # --- Baby Boom Generation (born 1943–1960) ---
+    {"year": 1997, "name": "Clinton",       "birth_year": 1946, "how": "elected"},
+    {"year": 2001, "name": "G.W. Bush",     "birth_year": 1946, "how": "elected"},
+    {"year": 2005, "name": "G.W. Bush",     "birth_year": 1946, "how": "elected"},
+    {"year": 2009, "name": "Obama",         "birth_year": 1961, "how": "elected"},  # Gen X actually
+    {"year": 2013, "name": "Obama",         "birth_year": 1961, "how": "elected"},
+    {"year": 2017, "name": "Trump",         "birth_year": 1946, "how": "elected"},
+    {"year": 2021, "name": "Biden",         "birth_year": 1942, "how": "elected"},  # Silent Gen actually
+    {"year": 2025, "name": "Trump",         "birth_year": 1946, "how": "elected"},
+]
+
+# Derive generation from birth year using the same function as congress data
+pres_rows = []
+for p in PRESIDENT_DATA:
+    gen = classify_generation(p["birth_year"])
+    pres_rows.append({
+        "year":       p["year"],
+        "name":       p["name"],
+        "birth_year": p["birth_year"],
+        "generation": gen,
+        "how":        p["how"],
+    })
+
+pres_df = pd.DataFrame(pres_rows)
+pres_df.to_csv(os.path.join(DATA_DIR, "presidents.csv"), index=False)
+
+print(f"\n✅ data/presidents.csv  — {len(pres_df)} rows")
+print("\n── Sanity check: presidents by generation ──")
+for gen, grp in pres_df.groupby("generation"):
+    names = ", ".join(grp["name"].unique())
+    print(f"  {gen}: {names}")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # SUMMARY
 # ══════════════════════════════════════════════════════════════════════════════
 print("\n" + "=" * 60)
@@ -414,6 +496,7 @@ print("ALL DONE")
 print(f"  data/congress_historical.csv       — {len(hist_df)} congress rows")
 print(f"  data/congress_snapshots_detail.csv — {len(snap_df)} snapshot rows")
 print(f"  data/bls_gen_comparison.csv        — {len(bls_df)} sector rows")
+print(f"  data/presidents.csv                — {len(pres_df)} term rows")
 print("=" * 60)
 
 print("\n── Sanity check: mean age ──")

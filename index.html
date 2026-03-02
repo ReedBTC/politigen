@@ -703,7 +703,7 @@ function smooth(pts, t=0.4) {
   return d;
 }
 
-function buildRFChart(svgId, histRows, colMap, height) {
+function buildRFChart(svgId, histRows, colMap, height, presRows) {
   const svg = document.getElementById(svgId);
   svg.setAttribute('height', height);
   const W = svg.parentElement.offsetWidth;
@@ -743,8 +743,73 @@ function buildRFChart(svgId, histRows, colMap, height) {
     }
   }
 
-  // Hover overlay
-  const overlay = svgEl('rect',{x:PAD.left,y:PAD.top,width:CW,height:CH,fill:'transparent',style:'cursor:crosshair'},svg);
+  // President dots — one per term start, sitting on their generation's curve
+  if (presRows && presRows.length) {
+    const tip = document.getElementById('tooltip');
+
+    // Helper: interpolate the curve value for a given generation at a given year
+    function interpVal(gen, yr) {
+      const col = Object.keys(colMap).find(k => colMap[k] === gen);
+      if (!col) return null;
+      // Find the two nearest hist rows bracketing yr
+      const before = histRows.filter(r => r.year <= yr);
+      const after  = histRows.filter(r => r.year >= yr);
+      if (!before.length || !after.length) return null;
+      const lo = before[before.length - 1];
+      const hi = after[0];
+      if (lo.year === hi.year) return lo[col] || 0;
+      const t = (yr - lo.year) / (hi.year - lo.year);
+      return (lo[col] || 0) + t * ((hi[col] || 0) - (lo[col] || 0));
+    }
+
+    for (const p of presRows) {
+      const gen = p.generation;
+      if (!COLORS[gen]) continue;
+      const val = interpVal(gen, p.year);
+      if (val === null || val < 0.1) continue;
+
+      const cx = xS(p.year);
+      const cy = yS(val);
+      const color = COLORS[gen];
+
+      // Outer glow ring
+      svgEl('circle', {cx, cy, r:7, fill:color, opacity:0.18}, svg);
+      // Filled dot
+      const dot = svgEl('circle', {
+        cx, cy, r:4.5,
+        fill: color,
+        stroke: '#0c0c0f',
+        'stroke-width': 1.5,
+        style: 'cursor:pointer',
+        opacity: 0.95,
+      }, svg);
+
+      // Tooltip — name only on hover, suppress crosshair
+      dot.addEventListener('mouseenter', e => {
+        tip.style.display = 'block';
+        tip.style.left = (e.clientX + 14) + 'px';
+        tip.style.top  = (e.clientY - 36) + 'px';
+        document.getElementById('tip-year').textContent = p.year;
+        document.getElementById('tip-body').innerHTML =
+          `<span style="color:${color}">${p.name}</span>`;
+      });
+      dot.addEventListener('mousemove', e => {
+        tip.style.left = (e.clientX + 14) + 'px';
+        tip.style.top  = (e.clientY - 36) + 'px';
+      });
+      dot.addEventListener('mouseleave', () => {
+        tip.style.display = 'none';
+      });
+    }
+  }
+
+  // Hover overlay — drawn last so it sits on top for crosshair, but dots
+  // use pointer-events so they intercept before the overlay
+  const overlay = svgEl('rect',{x:PAD.left,y:PAD.top,width:CW,height:CH,fill:'transparent',style:'cursor:crosshair;pointer-events:all'},svg);
+  // Move overlay behind dots by inserting it before the first dot
+  const firstDot = svg.querySelector('circle');
+  if (firstDot) svg.insertBefore(overlay, firstDot);
+
   const hLine   = svgEl('line',{x1:0,x2:0,y1:PAD.top,y2:PAD.top+CH,stroke:'#555','stroke-width':1,'stroke-dasharray':'3,3',display:'none'},svg);
   const tip     = document.getElementById('tooltip');
 
@@ -1040,23 +1105,25 @@ function buildBLSChart(blsRows) {
    DATA LOADING & INIT
 ═══════════════════════════════════════════════════════════ */
 async function loadData() {
-  const [histText, snapText, blsText] = await Promise.all([
+  const [histText, snapText, blsText, presText] = await Promise.all([
     fetch('./data/congress_historical.csv').then(r => r.text()),
     fetch('./data/congress_snapshots_detail.csv').then(r => r.text()),
     fetch('./data/bls_gen_comparison.csv').then(r => r.text()),
+    fetch('./data/presidents.csv').then(r => r.text()),
   ]);
 
   const histRows = parseCSV(histText);
   snapRows       = parseCSV(snapText);
   const blsRows  = parseCSV(blsText);
+  const presRows = parseCSV(presText);
 
   // Section 00
   buildBLSChart(blsRows);
 
   // Section 01
   buildEraBar(histRows);
-  buildRFChart('chart-congress', histRows, COL_TO_GEN,      260);
-  buildRFChart('chart-senate',   histRows, SENATE_COL_TO_GEN, 220);
+  buildRFChart('chart-congress', histRows, COL_TO_GEN,        260, presRows);
+  buildRFChart('chart-senate',   histRows, SENATE_COL_TO_GEN, 220, presRows);
   buildGenLegend();
 
   // Section 02
