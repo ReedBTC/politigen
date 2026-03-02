@@ -13,11 +13,11 @@
     --bg:      #0c0c0f;
     --surface: #111114;
     --border:  #222230;
-    --text:    #e2ddd4;
-    --muted:   #555;
+    --text:    #e8e4dc;
+    --muted:   #888;
     --red:     #e05252;
-    --gi:      #5b8fa8;
-    --sil:     #7fb069;
+    --gi:      #f0d060;
+    --sil:     #6a9ab8;
     --boom:    #e8875a;
     --genx:    #9b6fa8;
     --mil:     #e8c84a;
@@ -621,14 +621,18 @@ const GEN_SHORT = {
   'Millennial Generation':  'Millennial',
 };
 const COLORS = {
-  'Progressive Generation': '#c4956a',  // warm tan/earthy
-  'Missionary Generation':  '#6a9bb5',  // muted steel blue
-  'Lost Generation':        '#b5736a',  // dusty brick red
-  'G.I. Generation':        '#5b8fa8',
-  'Silent Generation':      '#7fb069',
-  'Baby Boom Generation':   '#e8875a',
-  'Gen X (13ers)':          '#9b6fa8',
-  'Millennial Generation':  '#e8c84a',
+  // Artist archetype (blue shades) — Progressive, Silent, Gen Z
+  'Progressive Generation': '#4a7a9b',  // darkest blue
+  'Silent Generation':      '#6a9ab8',  // mid blue
+  // Prophet archetype (orange shades) — Missionary, Boomer
+  'Missionary Generation':  '#d4693a',  // darker orange
+  'Baby Boom Generation':   '#e8875a',  // lighter orange (existing)
+  // Nomad archetype (purple shades) — Lost, Gen X
+  'Lost Generation':        '#b08ac8',  // lighter purple
+  'Gen X (13ers)':          '#9b6fa8',  // darker purple (existing)
+  // Hero archetype (yellow shades) — G.I., Millennial
+  'G.I. Generation':        '#f0d060',  // lighter yellow
+  'Millennial Generation':  '#e8c84a',  // deeper yellow (existing)
 };
 
 // CSV column name → generation name (for congress_historical.csv)
@@ -655,11 +659,11 @@ const SENATE_COL_TO_GEN = {
 
 // Dominant-generation era bar labels
 const ERAS = [
-  { label:'PROGRESSIVE', color:'#c4956a', start:1901, end:1912 },
-  { label:'MISSIONARY',  color:'#6a9bb5', start:1913, end:1934 },
-  { label:'LOST',        color:'#b5736a', start:1935, end:1954 },
-  { label:'G.I.',        color:'#5b8fa8', start:1955, end:1975 },
-  { label:'SILENT',      color:'#7fb069', start:1977, end:1991 },
+  { label:'PROGRESSIVE', color:'#4a7a9b', start:1901, end:1912 },
+  { label:'MISSIONARY',  color:'#d4693a', start:1913, end:1934 },
+  { label:'LOST',        color:'#b08ac8', start:1935, end:1954 },
+  { label:'G.I.',        color:'#f0d060', start:1955, end:1975 },
+  { label:'SILENT',      color:'#6a9ab8', start:1977, end:1991 },
   { label:'BOOMER',      color:'#e8875a', start:1993, end:2025 },
 ];
 
@@ -952,11 +956,11 @@ function switchTab(chamber, e) {
 const BLS_GENS   = ['Gen Z','Millennial','Gen X','Boomer','Silent'];
 const BLS_KEYS   = ['pct_genz','pct_millennial','pct_genx','pct_boomer','pct_silent'];
 const BLS_COLORS = {
-  'Gen Z':      '#9b6fa8',
-  'Millennial': '#7fb069',
-  'Gen X':      '#5b8fa8',
-  'Boomer':     '#e8875a',
-  'Silent':     '#8a8070',
+  'Gen Z':      '#8bbdd4',  // Artist — lightest blue
+  'Millennial': '#e8c84a',  // Hero — deeper yellow
+  'Gen X':      '#9b6fa8',  // Nomad — darker purple
+  'Boomer':     '#e8875a',  // Prophet — lighter orange
+  'Silent':     '#6a9ab8',  // Artist — mid blue
 };
 
 function buildBLSChart(blsRows) {
@@ -996,15 +1000,19 @@ function buildBLSChart(blsRows) {
       'font-weight':(isElected||isAllWorkers)?'500':'400',
     },svg).textContent=row.sector;
 
+    // Normalize BLS values to sum to 100% to ensure bars always fill fully
+    const rawVals = BLS_KEYS.map(k => row[k] || 0);
+    const total   = rawVals.reduce((s,v) => s+v, 0) || 100;
+    const normVals = rawVals.map(v => v / total * 100);
     let xCursor = 0;
-    BLS_KEYS.forEach((key, gi) => {
-      const pct = row[key] || 0;
+    normVals.forEach((pct, gi) => {
       if (pct === 0) { xCursor += pct; return; }
+      const rawPct = rawVals[gi];
       const color = BLS_COLORS[BLS_GENS[gi]];
       const bx = xS(xCursor), bw = (pct/100)*BAR_W;
       svgEl('rect',{x:bx,y:y+2,width:bw,height:ROW_H-4,fill:color,opacity:isElected?0.9:0.65,rx:1},svg);
       if (bw > 22) {
-        svgEl('text',{x:bx+bw/2,y:y+ROW_H/2+4,'text-anchor':'middle','font-family':'DM Mono,monospace','font-size':9,fill:'#0c0c0f','font-weight':'500',opacity:0.9},svg).textContent=pct+'%';
+        svgEl('text',{x:bx+bw/2,y:y+ROW_H/2+4,'text-anchor':'middle','font-family':'DM Mono,monospace','font-size':9,fill:'#0c0c0f','font-weight':'500',opacity:0.9},svg).textContent=rawPct+'%';
       }
       xCursor += pct;
     });
@@ -1020,7 +1028,7 @@ function buildBLSChart(blsRows) {
 
   // BLS legend
   const leg = document.getElementById('bls-legend');
-  [['Gen. Z (2006+)','Gen Z'],['Millennial (1982–2005)','Millennial'],['Gen X (1961–81)','Gen X'],['Boomer (1943–60)','Boomer'],['Silent (1925–42)','Silent']].forEach(([label,key]) => {
+  [['Gen Z (2006+) · Artist','Gen Z'],['Millennial (1982–2005) · Hero','Millennial'],['Gen X (1961–81) · Nomad','Gen X'],['Boomer (1943–60) · Prophet','Boomer'],['Silent (1925–42) · Artist','Silent']].forEach(([label,key]) => {
     const item = document.createElement('div');
     item.className = 'legend-item';
     item.innerHTML = `<div class="legend-swatch" style="background:${BLS_COLORS[key]};height:10px;width:10px;border-radius:50%;flex-shrink:0"></div>${label}`;
