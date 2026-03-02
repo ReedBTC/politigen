@@ -330,29 +330,8 @@ def bls_to_gen_shares(under25, a2544, a4564, a65plus):
     }
 
 bls_rows = []
-for search, label in SECTORS.items():
-    matches = df_bls[df_bls["industry"].str.contains(search, case=False, na=False)]
-    if len(matches) == 0:
-        print(f"  ⚠ No match for: '{search}'")
-        continue
-    row  = matches.iloc[0]
-    u25  = pct_of_total(row, "age_16_19") + pct_of_total(row, "age_20_24")
-    a2544 = pct_of_total(row, "age_25_34") + pct_of_total(row, "age_35_44")
-    a4564 = pct_of_total(row, "age_45_54") + pct_of_total(row, "age_55_64")
-    a65p  = pct_of_total(row, "age_65_plus")
-    bls_rows.append({
-        "sector":         label,
-        "is_elected":     False,
-        "is_all_workers": label == "All Workers",
-        "pct_under_25":   u25,
-        "pct_25_44":      a2544,
-        "pct_45_64":      a4564,
-        "pct_65_plus":    a65p,
-        **bls_to_gen_shares(u25, a2544, a4564, a65p),
-    })
-    print(f"  ✓ {label}")
 
-# ── Elected officials row ──────────────────────────────────────────────────────
+# ── Elected officials row — built first so it appears at top of CSV ────────────
 off_gens   = {"genz": 0, "millennial": 0, "genx": 0, "boomer": 0, "silent": 0, "pregi": 0}
 total_off  = 0
 
@@ -394,6 +373,29 @@ bls_rows.append({
     "pct_silent":     opct("silent"),
 })
 print(f"  ✓ Elected Officials (n={total_off})")
+
+# ── BLS sector rows ────────────────────────────────────────────────────────────
+for search, label in SECTORS.items():
+    matches = df_bls[df_bls["industry"].str.contains(search, case=False, na=False)]
+    if len(matches) == 0:
+        print(f"  ⚠ No match for: '{search}'")
+        continue
+    row  = matches.iloc[0]
+    u25  = pct_of_total(row, "age_16_19") + pct_of_total(row, "age_20_24")
+    a2544 = pct_of_total(row, "age_25_34") + pct_of_total(row, "age_35_44")
+    a4564 = pct_of_total(row, "age_45_54") + pct_of_total(row, "age_55_64")
+    a65p  = pct_of_total(row, "age_65_plus")
+    bls_rows.append({
+        "sector":         label,
+        "is_elected":     False,
+        "is_all_workers": label == "All Workers",
+        "pct_under_25":   u25,
+        "pct_25_44":      a2544,
+        "pct_45_64":      a4564,
+        "pct_65_plus":    a65p,
+        **bls_to_gen_shares(u25, a2544, a4564, a65p),
+    })
+    print(f"  ✓ {label}")
 
 bls_df = pd.DataFrame(bls_rows)
 bls_df.to_csv(os.path.join(DATA_DIR, "bls_gen_comparison.csv"), index=False)

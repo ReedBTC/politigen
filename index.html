@@ -16,11 +16,11 @@
     --text:    #e8e4dc;
     --muted:   #888;
     --red:     #e05252;
-    --gi:      #f0d060;
-    --sil:     #6a9ab8;
-    --boom:    #e8875a;
-    --genx:    #9b6fa8;
-    --mil:     #e8c84a;
+    --gi:      #77ccaa;
+    --sil:     #3366aa;
+    --boom:    #e87744;
+    --genx:    #885599;
+    --mil:     #559988;
   }
 
   html { scroll-behavior: smooth; }
@@ -622,17 +622,17 @@ const GEN_SHORT = {
 };
 const COLORS = {
   // Artist archetype (blue shades) — Progressive, Silent, Gen Z
-  'Progressive Generation': '#4a7a9b',  // darkest blue
-  'Silent Generation':      '#6a9ab8',  // mid blue
+  'Progressive Generation': '#224488',
+  'Silent Generation':      '#3366aa',
   // Prophet archetype (orange shades) — Missionary, Boomer
-  'Missionary Generation':  '#d4693a',  // darker orange
-  'Baby Boom Generation':   '#e8875a',  // lighter orange (existing)
+  'Missionary Generation':  '#cc5522',
+  'Baby Boom Generation':   '#e87744',
   // Nomad archetype (purple shades) — Lost, Gen X
-  'Lost Generation':        '#b08ac8',  // lighter purple
-  'Gen X (13ers)':          '#9b6fa8',  // darker purple (existing)
-  // Hero archetype (yellow shades) — G.I., Millennial
-  'G.I. Generation':        '#f0d060',  // lighter yellow
-  'Millennial Generation':  '#e8c84a',  // deeper yellow (existing)
+  'Lost Generation':        '#bb88cc',
+  'Gen X (13ers)':          '#885599',
+  // Hero archetype (teal-gold shades) — G.I., Millennial
+  'G.I. Generation':        '#77ccaa',
+  'Millennial Generation':  '#559988',
 };
 
 // CSV column name → generation name (for congress_historical.csv)
@@ -660,13 +660,13 @@ const SENATE_COL_TO_GEN = {
 // Dominant-generation era bar labels
 // Start/end = when generation first crossed / dropped below 50% of Full Congress
 const ERAS = [
-  { label:'PROGRESSIVE', color:'#4a7a9b', start:1901, end:1912 },
-  { label:'MISSIONARY',  color:'#d4693a', start:1913, end:1934 },
-  { label:'LOST',        color:'#b08ac8', start:1935, end:1954 },
-  { label:'G.I.',        color:'#f0d060', start:1955, end:1975 },
-  { label:'SILENT',      color:'#6a9ab8', start:1977, end:1991 },
-  { label:'BOOMER',      color:'#e8875a', start:1993, end:2021 },
-  { label:'GEN X',       color:'#9b6fa8', start:2023, end:2025 },
+  { label:'PROGRESSIVE', color:'#224488', start:1901, end:1912 },
+  { label:'MISSIONARY',  color:'#cc5522', start:1913, end:1934 },
+  { label:'LOST',        color:'#bb88cc', start:1935, end:1954 },
+  { label:'G.I.',        color:'#77ccaa', start:1955, end:1975 },
+  { label:'SILENT',      color:'#3366aa', start:1977, end:1991 },
+  { label:'BOOMER',      color:'#e87744', start:1993, end:2021 },
+  { label:'GEN X',       color:'#885599', start:2023, end:2025 },
 ];
 
 const SNAP_CONTEXT = {
@@ -1037,11 +1037,11 @@ function switchTab(chamber, e) {
 const BLS_GENS   = ['Gen Z','Millennial','Gen X','Boomer','Silent'];
 const BLS_KEYS   = ['pct_genz','pct_millennial','pct_genx','pct_boomer','pct_silent'];
 const BLS_COLORS = {
-  'Gen Z':      '#8bbdd4',  // Artist — lightest blue
-  'Millennial': '#e8c84a',  // Hero — deeper yellow
-  'Gen X':      '#9b6fa8',  // Nomad — darker purple
-  'Boomer':     '#e8875a',  // Prophet — lighter orange
-  'Silent':     '#6a9ab8',  // Artist — mid blue
+  'Gen Z':      '#6688cc',  // Artist — lightest blue
+  'Millennial': '#559988',  // Hero — teal
+  'Gen X':      '#885599',  // Nomad — darker purple
+  'Boomer':     '#e87744',  // Prophet — orange
+  'Silent':     '#3366aa',  // Artist — mid blue
 };
 
 function buildBLSChart(blsRows) {
