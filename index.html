@@ -730,15 +730,31 @@ function buildRFChart(svgId, histRows, colMap, height, presRows) {
   svgEl('line',{x1:PAD.left,x2:PAD.left,y1:PAD.top,y2:PAD.top+CH,stroke:'#444','stroke-width':1.5},svg);
   svgEl('line',{x1:PAD.left,x2:PAD.left+CW,y1:PAD.top+CH,y2:PAD.top+CH,stroke:'#444','stroke-width':1.5},svg);
 
-  // One curve per generation
+  // One curve per generation — only draw segments where value is above threshold
+  const MIN_PCT = 0.5; // don't render curve when generation is effectively absent
   for (const gen of GENS) {
     const col = Object.keys(colMap).find(k => colMap[k] === gen);
     if (!col) continue;
-    const pts = histRows.map(r => [xS(r.year), yS(r[col] || 0)]);
-    svgEl('path',{d:smooth(pts),fill:'none',stroke:COLORS[gen],'stroke-width':4,opacity:0.12},svg);
-    svgEl('path',{d:smooth(pts),fill:'none',stroke:COLORS[gen],'stroke-width':2,opacity:0.85},svg);
-    // Peak label
     const vals = histRows.map(r => r[col] || 0);
+
+    // Split into contiguous active segments
+    let segments = [], current = [];
+    for (let i = 0; i < histRows.length; i++) {
+      if (vals[i] >= MIN_PCT) {
+        current.push([xS(histRows[i].year), yS(vals[i])]);
+      } else {
+        if (current.length > 1) segments.push(current);
+        current = [];
+      }
+    }
+    if (current.length > 1) segments.push(current);
+
+    for (const seg of segments) {
+      svgEl('path',{d:smooth(seg),fill:'none',stroke:COLORS[gen],'stroke-width':4,opacity:0.12},svg);
+      svgEl('path',{d:smooth(seg),fill:'none',stroke:COLORS[gen],'stroke-width':2,opacity:0.85},svg);
+    }
+
+    // Peak label
     const peakIdx = vals.indexOf(Math.max(...vals));
     if (vals[peakIdx] > 5) {
       svgEl('text',{x:xS(histRows[peakIdx].year),y:yS(vals[peakIdx])-8,'text-anchor':'middle','font-family':'DM Mono,monospace','font-size':9.5,'font-weight':'500',fill:COLORS[gen],opacity:0.9},svg).textContent=GEN_SHORT[gen];
