@@ -1,31 +1,31 @@
 year,chamber,generation,gen_key,n,mean_age,pct
-1965,Full Congress,Missionary Generation,missionary,4,85.0,0.6
-1965,Full Congress,Lost Generation,lost,116,68.9,16.0
-1965,Full Congress,G.I. Generation,gi,492,50.8,68.0
-1965,Full Congress,Silent Generation,silent,111,35.8,15.3
+1965,House,Missionary Generation,missionary,3,84.3,0.5
+1965,House,Lost Generation,lost,82,68.8,13.5
+1965,House,G.I. Generation,gi,420,50.4,69.2
+1965,House,Silent Generation,silent,101,35.7,16.6
 1965,Senate,Missionary Generation,missionary,1,87.0,0.9
 1965,Senate,Lost Generation,lost,34,69.2,29.1
 1965,Senate,G.I. Generation,gi,72,53.1,61.5
 1965,Senate,Silent Generation,silent,10,36.9,8.5
-1985,Full Congress,Lost Generation,lost,1,84.0,0.2
-1985,Full Congress,G.I. Generation,gi,122,65.8,18.4
-1985,Full Congress,Silent Generation,silent,396,50.0,59.8
-1985,Full Congress,Baby Boom Generation,boomer,143,37.1,21.6
+1985,House,Lost Generation,lost,1,84.0,0.2
+1985,House,G.I. Generation,gi,87,65.7,16.1
+1985,House,Silent Generation,silent,321,49.9,59.4
+1985,House,Baby Boom Generation,boomer,131,37.0,24.3
 1985,Senate,G.I. Generation,gi,35,65.9,28.7
 1985,Senate,Silent Generation,silent,75,50.4,61.5
 1985,Senate,Baby Boom Generation,boomer,12,38.2,9.8
-2005,Full Congress,G.I. Generation,gi,9,81.3,1.4
-2005,Full Congress,Silent Generation,silent,164,67.2,24.8
-2005,Full Congress,Baby Boom Generation,boomer,409,53.3,61.8
-2005,Full Congress,Gen X (13ers),genx,80,39.0,12.1
+2005,House,G.I. Generation,gi,3,80.3,0.6
+2005,House,Silent Generation,silent,120,67.0,22.2
+2005,House,Baby Boom Generation,boomer,342,53.2,63.3
+2005,House,Gen X (13ers),genx,75,38.8,13.9
 2005,Senate,G.I. Generation,gi,6,81.8,4.9
 2005,Senate,Silent Generation,silent,44,67.7,36.1
 2005,Senate,Baby Boom Generation,boomer,67,53.7,54.9
 2005,Senate,Gen X (13ers),genx,5,42.0,4.1
-2025,Full Congress,Silent Generation,silent,14,84.8,2.3
-2025,Full Congress,Baby Boom Generation,boomer,209,71.1,33.8
-2025,Full Congress,Gen X (13ers),genx,327,53.6,52.9
-2025,Full Congress,Millennial Generation,millennial,68,38.1,11.0
+2025,House,Silent Generation,silent,11,84.6,2.2
+2025,House,Baby Boom Generation,boomer,148,71.0,29.2
+2025,House,Gen X (13ers),genx,284,53.4,56.1
+2025,House,Millennial Generation,millennial,63,37.9,12.5
 2025,Senate,Silent Generation,silent,3,85.3,2.7
 2025,Senate,Baby Boom Generation,boomer,61,71.2,54.5
 2025,Senate,Gen X (13ers),genx,43,54.8,38.4

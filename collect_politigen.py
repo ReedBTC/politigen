@@ -177,6 +177,14 @@ for cn, grp in member_df.groupby("congress"):
             round(sen_counts.get(g, 0) / sen_total * 100, 2) if sen_total else 0
         )
 
+    hou_grp    = grp[grp["chamber"] == "House"]
+    hou_total  = len(hou_grp)
+    hou_counts = hou_grp["generation"].value_counts()
+    for g in TRACKED_GENS:
+        row[f"house_pct_{safe_key(g)}"] = (
+            round(hou_counts.get(g, 0) / hou_total * 100, 2) if hou_total else 0
+        )
+
     snapshots.append(row)
 
 hist_df = pd.DataFrame(snapshots).sort_values("year")
@@ -204,9 +212,9 @@ for year in SNAP_YEARS:
         continue
     cn = int(cn_match.iloc[0])
 
-    for chamber_name in ["Full Congress", "Senate"]:
-        sub = (member_df[member_df["congress"] == cn]
-               if chamber_name == "Full Congress"
+    for chamber_name in ["House", "Senate"]:
+        sub = (member_df[(member_df["congress"] == cn) & (member_df["chamber"] == "House")]
+               if chamber_name == "House"
                else member_df[(member_df["congress"] == cn) & (member_df["chamber"] == "Senate")])
         total = len(sub)
         for gen, gkey in zip(SNAP_GENS, SNAP_GEN_KEYS):
@@ -231,7 +239,7 @@ snap_df.to_csv(os.path.join(DATA_DIR, "congress_snapshots_detail.csv"), index=Fa
 print(f"\n✅ data/congress_historical.csv        — {len(hist_df)} rows")
 print(f"✅ data/congress_snapshots_detail.csv  — {len(snap_df)} rows")
 
-print("\n── Sanity check: generations (Full Congress) ──")
+print("\n── Sanity check: generations (House) ──")
 for g in ["Progressive Generation", "Missionary Generation", "Lost Generation"]:
     key = f"pct_{safe_key(g)}"
     peak_row = hist_df.loc[hist_df[key].idxmax()]

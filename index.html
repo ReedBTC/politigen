@@ -499,9 +499,9 @@
 
   <div style="position:relative;height:28px;margin-bottom:4px;" id="era-bar"></div>
 
-  <div class="chart-label">% of Full Congress — All Members</div>
+  <div class="chart-label">% of the U.S. House</div>
   <div class="chart-wrap">
-    <svg id="chart-congress" class="chart-svg" height="260"></svg>
+    <svg id="chart-house" class="chart-svg" height="260"></svg>
   </div>
   <div class="legend" id="gen-legend"></div>
 
@@ -565,8 +565,8 @@
   <p class="subtitle">At four moments in history: who was in Congress, how old they were, and how long they'd already been there. The Boomer column tells the whole story.</p>
 
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('Full Congress', event)">Full Congress</button>
-    <button class="tab" onclick="switchTab('Senate', event)">Senate Only</button>
+    <button class="tab active" onclick="switchTab('House', event)">House</button>
+    <button class="tab" onclick="switchTab('Senate', event)">Senate</button>
   </div>
 
   <div class="snap-legend" id="snap-legend"></div>
@@ -636,16 +636,6 @@ const COLORS = {
 };
 
 // CSV column name → generation name (for congress_historical.csv)
-const COL_TO_GEN = {
-  'pct_progressive_generation': 'Progressive Generation',
-  'pct_missionary_generation':  'Missionary Generation',
-  'pct_lost_generation':        'Lost Generation',
-  'pct_gi_generation':          'G.I. Generation',
-  'pct_silent_generation':      'Silent Generation',
-  'pct_baby_boom_generation':   'Baby Boom Generation',
-  'pct_gen_x_13ers':            'Gen X (13ers)',
-  'pct_millennial_generation':  'Millennial Generation',
-};
 const SENATE_COL_TO_GEN = {
   'senate_pct_progressive_generation': 'Progressive Generation',
   'senate_pct_missionary_generation':  'Missionary Generation',
@@ -655,6 +645,16 @@ const SENATE_COL_TO_GEN = {
   'senate_pct_baby_boom_generation':   'Baby Boom Generation',
   'senate_pct_gen_x_13ers':            'Gen X (13ers)',
   'senate_pct_millennial_generation':  'Millennial Generation',
+};
+const HOUSE_COL_TO_GEN = {
+  'house_pct_progressive_generation': 'Progressive Generation',
+  'house_pct_missionary_generation':  'Missionary Generation',
+  'house_pct_lost_generation':        'Lost Generation',
+  'house_pct_gi_generation':          'G.I. Generation',
+  'house_pct_silent_generation':      'Silent Generation',
+  'house_pct_baby_boom_generation':   'Baby Boom Generation',
+  'house_pct_gen_x_13ers':            'Gen X (13ers)',
+  'house_pct_millennial_generation':  'Millennial Generation',
 };
 
 // Dominant-generation era bar labels
@@ -952,7 +952,7 @@ function buildAgeChart(histRows) {
    SECTION 3 — AGING IN PLACE
 ═══════════════════════════════════════════════════════════ */
 let snapRows = [];
-let currentChamber = 'Full Congress';
+let currentChamber = 'House';
 
 function buildSnapLegend() {
   const leg = document.getElementById('snap-legend');
@@ -1138,8 +1138,8 @@ async function loadData() {
 
   // Section 01
   buildEraBar(histRows);
-  buildRFChart('chart-congress', histRows, COL_TO_GEN,        260, presRows);
-  buildRFChart('chart-senate',   histRows, SENATE_COL_TO_GEN, 220, presRows);
+  buildRFChart('chart-house',   histRows, HOUSE_COL_TO_GEN,  260, presRows);
+  buildRFChart('chart-senate',  histRows, SENATE_COL_TO_GEN, 220, presRows);
   buildGenLegend();
 
   // Section 02
