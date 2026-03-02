@@ -1,4 +1,4 @@
-# GenGov Repository Structure
+# Politigen Repository Structure
 
 ```
 politigen/
@@ -20,7 +20,10 @@ politigen/
 │   │                                 # Columns: congress, year, total_members,
 │   │                                 #          mean_age, median_age,
 │   │                                 #          senate_mean_age, house_mean_age,
-│   │                                 #          pct_pregi, pct_gi_generation,
+│   │                                 #          pct_progressive_generation,
+│   │                                 #          pct_missionary_generation,
+│   │                                 #          pct_lost_generation,
+│   │                                 #          pct_gi_generation,
 │   │                                 #          pct_silent_generation,
 │   │                                 #          pct_baby_boom_generation,
 │   │                                 #          pct_gen_x_13ers,
@@ -34,6 +37,8 @@ politigen/
 │   │                                 #          n, mean_age, pct
 │   │                                 # Years: 1965, 1985, 2005, 2025
 │   │                                 # Chambers: Full Congress, Senate
+│   │                                 # Generations: Progressive, Missionary, Lost (where
+│   │                                 #   present), G.I., Silent, Boomer, Gen X, Millennial
 │   │                                 # Feeds: Section 3 (Snapshots)
 │   │
 │   └── bls_gen_comparison.csv        # Generational share % by industry sector
@@ -45,10 +50,11 @@ politigen/
 │                                     #          pct_genx, pct_boomer, pct_silent
 │                                     # Feeds: Section 0 (Workforce Comparison)
 │
-└── politigen.html               # The visualization. One self-contained file.
-                                 # Open directly in any browser — no server needed.
-                                 # Currently uses hardcoded data; will be updated
-                                 # to load from data/ CSVs.
+└── index.html                   # The visualization. One self-contained file.
+                                 # Served via GitHub Pages from repo root.
+                                 # Loads all data from data/ CSVs at runtime via fetch().
+                                 # No build step — open index.html or deploy to any
+                                 # static host and it works.
 ```
 
 ## Quick Start
@@ -64,10 +70,10 @@ pip install -r requirements.txt
 # Refresh all data (optional — CSVs are already committed)
 python collect_politigen.py
 
-# View the site
-open politigen.html        # macOS
-xdg-open politigen.html    # Linux
-# or just double-click the file
+# View the site locally via any static server, e.g.:
+python -m http.server 8000
+# then open http://localhost:8000
+# (opening index.html as a file:// URL won't work — fetch() is blocked by browsers)
 ```
 
 ## Data Sources
@@ -81,17 +87,20 @@ The legislators source is fetched as two JSON files: `legislators-historical.jso
 
 ## Generational Framework
 
-All generation assignments use **Strauss-Howe** cutoffs (not Pew Research):
+All generation assignments use **Strauss-Howe** cutoffs:
 
-| Generation       | Birth Years |
-|------------------|-------------|
-| Pre-G.I.         | before 1901 |
-| G.I. Generation  | 1901–1924   |
-| Silent           | 1925–1942   |
-| Baby Boom        | 1943–1960   |
-| Gen X (13ers)    | 1961–1981   |
-| Millennial       | 1982–2005   |
-| Gen Z            | 2006+       |
+| Generation            | Birth Years  |
+|-----------------------|--------------|
+| Pre-G.I. (fallback)   | before 1843  |
+| Progressive           | 1843–1859    |
+| Missionary            | 1860–1882    |
+| Lost                  | 1883–1900    |
+| G.I. Generation       | 1901–1924    |
+| Silent                | 1925–1942    |
+| Baby Boom             | 1943–1960    |
+| Gen X (13ers)         | 1961–1981    |
+| Millennial            | 1982–2005    |
+| Gen Z                 | 2006+        |
 
 Congressional data uses **exact birth dates** from the legislators JSON. BLS data uses age brackets, so generational shares are **approximated** by proportionally splitting BLS's 10-year brackets across generation boundaries.
 
@@ -106,7 +115,7 @@ unitedstates/congress-legislators (GitHub)
 BLS.gov (CPS Table 18b Excel)
     └── cpsaat18b.xlsx ───────────────────► collect_politigen.py ──► data/bls_gen_comparison.csv
 
-data/*.csv ───────────────────────────────► politigen.html  (currently hardcoded; CSV wiring TBD)
+data/*.csv ───────────────────────────────► index.html (fetched at runtime via fetch())
 ```
 
 ## What Was Removed
@@ -116,6 +125,7 @@ collection scripts, matplotlib chart generators, and several standalone HTML cha
 All of that has been consolidated:
 
 - 5 Python scripts → 1 (`collect_politigen.py`)
-- Multiple chart HTML files → 1 (`politigen.html`)
+- Multiple chart HTML files → 1 (`index.html`, served from repo root via GitHub Pages)
 - Intermediate/derived CSVs → removed (only final CSVs kept in `data/`)
-- `docs/` (GitHub Pages) → removed (site will be served directly from `politigen.html`)
+- `docs/` (GitHub Pages) → removed (GitHub Pages now serves from repo root)
+- Hardcoded JS data arrays → removed (all data loaded from CSVs at runtime)
