@@ -14,7 +14,7 @@
     --surface: #111114;
     --border:  #222230;
     --text:    #e8e4dc;
-    --muted:   #888;
+    --muted:   #aaa;
     --red:     #e05252;
     --gi:      #3d7a66;
     --sil:     #4488cc;
@@ -721,11 +721,11 @@ function buildRFChart(svgId, histRows, colMap, height, presRows) {
   // Grid
   for (const gv of [0,25,50,75,100]) {
     svgEl('line',{x1:PAD.left,x2:PAD.left+CW,y1:yS(gv),y2:yS(gv),stroke:gv===0?'#444':'#1e1e26','stroke-width':gv===0?1.5:1},svg);
-    svgEl('text',{x:PAD.left-5,y:yS(gv)+4,'text-anchor':'end','font-family':'DM Mono,monospace','font-size':9,fill:'#666'},svg).textContent=gv+'%';
+    svgEl('text',{x:PAD.left-5,y:yS(gv)+4,'text-anchor':'end','font-family':'DM Mono,monospace','font-size':9,fill:'#999'},svg).textContent=gv+'%';
   }
   for (const yr of [1901,1920,1940,1960,1980,2000,2020]) {
     svgEl('line',{x1:xS(yr),x2:xS(yr),y1:PAD.top+CH,y2:PAD.top+CH+4,stroke:'#444','stroke-width':1},svg);
-    svgEl('text',{x:xS(yr),y:PAD.top+CH+14,'text-anchor':'middle','font-family':'DM Mono,monospace','font-size':9,fill:'#666'},svg).textContent=yr;
+    svgEl('text',{x:xS(yr),y:PAD.top+CH+14,'text-anchor':'middle','font-family':'DM Mono,monospace','font-size':9,fill:'#999'},svg).textContent=yr;
   }
   svgEl('line',{x1:PAD.left,x2:PAD.left,y1:PAD.top,y2:PAD.top+CH,stroke:'#444','stroke-width':1.5},svg);
   svgEl('line',{x1:PAD.left,x2:PAD.left+CW,y1:PAD.top+CH,y2:PAD.top+CH,stroke:'#444','stroke-width':1.5},svg);
@@ -856,7 +856,7 @@ function buildEraBar(histRows) {
   const PAD_L=38, CW=W-PAD_L-16;
   const minYear = histRows[0].year, maxYear = histRows[histRows.length-1].year;
   const x = yr => PAD_L + (yr-minYear)/(maxYear-minYear)*CW;
-  svgEl('text',{x:PAD_L-5,y:14,'text-anchor':'end','font-family':'DM Mono,monospace','font-size':8,fill:'#444'},svg).textContent='DOM.';
+  svgEl('text',{x:PAD_L-5,y:14,'text-anchor':'end','font-family':'DM Mono,monospace','font-size':8,fill:'#777'},svg).textContent='DOM.';
   for (const era of ERAS) {
     const x1=x(era.start), x2=x(Math.min(era.end, maxYear));
     svgEl('rect',{x:x1+1,y:4,width:x2-x1-2,height:18,fill:era.color,rx:2,opacity:0.85},svg);
@@ -895,11 +895,11 @@ function buildAgeChart(histRows) {
 
   for (const gy of [48,50,52,54,56,58,60,62,64]) {
     svgEl('line',{x1:PAD.left,x2:PAD.left+CW,y1:yS(gy),y2:yS(gy),stroke:'#1e1e26','stroke-width':1},svg);
-    svgEl('text',{x:PAD.left-6,y:yS(gy)+4,'text-anchor':'end','font-family':'DM Mono,monospace','font-size':10,fill:'#555'},svg).textContent=gy;
+    svgEl('text',{x:PAD.left-6,y:yS(gy)+4,'text-anchor':'end','font-family':'DM Mono,monospace','font-size':10,fill:'#888'},svg).textContent=gy;
   }
   for (const xt of [1901,1920,1940,1960,1980,2000,2020]) {
     svgEl('line',{x1:xS(xt),x2:xS(xt),y1:PAD.top+CH,y2:PAD.top+CH+5,stroke:'#555','stroke-width':1},svg);
-    svgEl('text',{x:xS(xt),y:PAD.top+CH+16,'text-anchor':'middle','font-family':'DM Mono,monospace','font-size':10,fill:'#555'},svg).textContent=xt;
+    svgEl('text',{x:xS(xt),y:PAD.top+CH+16,'text-anchor':'middle','font-family':'DM Mono,monospace','font-size':10,fill:'#888'},svg).textContent=xt;
   }
 
   // Shade post-1980
@@ -920,7 +920,7 @@ function buildAgeChart(histRows) {
   svgEl('text',{x:xS(maxPt.year)-6,y:yS(maxPt.mean_age)-12,'text-anchor':'end','font-family':'DM Mono,monospace','font-size':11,'font-weight':'500',fill:'#e05252'},svg).textContent=`${maxPt.mean_age} (${maxPt.year})`;
   svgEl('text',{x:xS(minPt.year),y:yS(minPt.mean_age)+18,'text-anchor':'middle','font-family':'DM Mono,monospace','font-size':10,fill:'#5b8fa8'},svg).textContent=`${minPt.mean_age} (${minPt.year})`;
 
-  const yl = svgEl('text',{x:12,y:PAD.top+CH/2,'font-family':'DM Mono,monospace','font-size':10,fill:'#555','text-anchor':'middle',transform:`rotate(-90,12,${PAD.top+CH/2})`},svg);
+  const yl = svgEl('text',{x:12,y:PAD.top+CH/2,'font-family':'DM Mono,monospace','font-size':10,fill:'#888','text-anchor':'middle',transform:`rotate(-90,12,${PAD.top+CH/2})`},svg);
   yl.textContent='AGE (YEARS)';
   svgEl('line',{x1:PAD.left,x2:PAD.left,y1:PAD.top,y2:PAD.top+CH,stroke:'#333','stroke-width':1.5},svg);
   svgEl('line',{x1:PAD.left,x2:PAD.left+CW,y1:PAD.top+CH,y2:PAD.top+CH,stroke:'#333','stroke-width':1.5},svg);
@@ -1059,9 +1059,9 @@ function buildBLSChart(blsRows) {
   for (const tick of [0,20,40,60,80,100]) {
     const x = xS(tick);
     svgEl('line',{x1:x,x2:x,y1:PAD.top,y2:H-PAD.bottom+4,stroke:'#1e1e26','stroke-width':1},svg);
-    svgEl('text',{x,y:H-PAD.bottom+16,'text-anchor':'middle','font-family':'DM Mono,monospace','font-size':9,fill:'#555'},svg).textContent=tick;
+    svgEl('text',{x,y:H-PAD.bottom+16,'text-anchor':'middle','font-family':'DM Mono,monospace','font-size':9,fill:'#888'},svg).textContent=tick;
   }
-  svgEl('text',{x:LABEL_W+BAR_W/2,y:H-4,'text-anchor':'middle','font-family':'DM Mono,monospace','font-size':9,fill:'#444','letter-spacing':'0.1em'},svg).textContent='GENERATIONAL SHARE (%)';
+  svgEl('text',{x:LABEL_W+BAR_W/2,y:H-4,'text-anchor':'middle','font-family':'DM Mono,monospace','font-size':9,fill:'#777','letter-spacing':'0.1em'},svg).textContent='GENERATIONAL SHARE (%)';
 
   blsRows.forEach((row, i) => {
     const y = PAD.top + i * (ROW_H + ROW_GAP);
@@ -1077,7 +1077,7 @@ function buildBLSChart(blsRows) {
       x:LABEL_W-10, y:y+ROW_H/2+4,
       'text-anchor':'end','font-family':'DM Mono,monospace',
       'font-size': (isElected||isAllWorkers)?10:9.5,
-      fill: isElected?'#e8875a':isAllWorkers?'#e2ddd4':'#888',
+      fill: isElected?'#f08050':isAllWorkers?'#e2ddd4':'#aaa',
       'font-weight':(isElected||isAllWorkers)?'500':'400',
     },svg).textContent=row.sector;
 
