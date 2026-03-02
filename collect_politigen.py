@@ -359,7 +359,7 @@ def opct(key):
     return round(off_gens[key] / total_off * 100, 1) if total_off else 0
 
 bls_rows.append({
-    "sector":         "Elected Officials",
+    "sector":         "Congress",
     "is_elected":     True,
     "is_all_workers": False,
     "pct_under_25":   opct("genz"),
