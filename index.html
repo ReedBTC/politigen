@@ -1344,7 +1344,8 @@ function renderWall() {
   const n  = rows.length;
   if (!n) return;
 
-  const PAD    = {top: 20, right: 20, bottom: 70, left: 42};
+  // House needs more bottom padding: 90° labels are tall (up to ~50px of text)
+  const PAD    = {top: 20, right: 20, bottom: isSen ? 70 : 110, left: 42};
   // House gets narrower bars since we show ~65 members vs ~33 senators
   const BAR_W  = isSen
     ? Math.max(14, Math.min(30, Math.floor((W - PAD.left - PAD.right) / n) - 4))
@@ -1419,7 +1420,7 @@ function renderWall() {
     const partyColor = r.party === 'Republican' ? '#cc5555' : r.party === 'Democrat' ? '#5577cc' : '#666';
     svgEl('circle', {
       cx: x + BAR_W/2,
-      cy: PAD.top + CHART_H + 7,
+      cy: PAD.top + CHART_H + (isSen ? 7 : 10),
       r: 3,
       fill: partyColor,
       opacity: seeking ? 0.85 : 0.3,
@@ -1440,7 +1441,7 @@ function renderWall() {
       }, svg).textContent = xLabel;
     } else {
       // 90° upward from baseline for House — fits more labels
-      const ly = PAD.top + CHART_H + 6;
+      const ly = PAD.top + CHART_H + 20;
       svgEl('text', {
         x: lx, y: ly,
         'text-anchor': 'start',
