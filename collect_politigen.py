@@ -537,31 +537,29 @@ FEC_URL     = "https://api.open.fec.gov/v1/candidates/"
 print("\nUsing hardcoded retirement list for 2026 Senate Class II...")
 # WHY NOT FEC API: The FEC incumbent_challenge=I query only returns senators who
 # have formally filed paperwork. Early in the election cycle (e.g. March 2026)
-# only 1–2 senators may have filed, so the API severely understates who is seeking
-# re-election. Retirement announcements are the opposite — they're national news,
+# only 1-2 senators may have filed, so the API severely understates who is seeking
+# re-election. Retirement announcements are the opposite -- they're national news,
 # slow-moving, and finite. It's easier to maintain a list of the ~8 people NOT
 # running than to wait for 25+ people to file paperwork.
 #
 # HOW TO MAINTAIN: When a new retirement is announced, add their state code and
 # a dated comment. To verify the current list is complete, check:
-#   https://ballotpedia.org/List_of_U.S._Senate_incumbents_who_are_not_running_for_re-election_in_2026
+#   https://ballotpedia.org/United_States_Senate_elections,_2026
+#   (see "Incumbents retiring from public office" section)
 #
-# Last validated against Ballotpedia: 2026-03-02
-# Ballotpedia confirmed count as of 2025-11-29: 8 (four D, four R) — matches list below.
-# McConnell (KY) announced 2026-02-16, bringing confirmed total to 9.
+# WARNING: Do not populate from memory -- verify against Ballotpedia directly.
 #
-# NOTE: Senators running for governor (Ossoff, Schatz) count as "not seeking
-# re-election" to their Senate seat, which is what this flag means for our viz.
+# Last validated against Ballotpedia screenshot: 2026-03-02
+# Confirmed retirees: 8 (four D, four R per table; prose count of 7 appears stale)
 RETIRING_STATES = {
-    "DE",   # Chris Coons       — announced 2025-01-07
-    "GA",   # Jon Ossoff        — announced 2025-02-10  (running for governor)
-    "HI",   # Brian Schatz      — announced 2025-01-10  (running for governor)
-    "IL",   # Dick Durbin       — announced 2023-02-22
-    "KY",   # Mitch McConnell   — announced 2026-02-16
-    "MI",   # Gary Peters       — announced 2023-11-02
-    "MN",   # Tina Smith        — announced 2024-11-20
-    "NH",   # Jeanne Shaheen    — announced 2024-03-18
-    "NM",   # Ben Ray Luján     — announced 2025-01-14
+    "IA",   # Joni Ernst        -- announced Sept 2, 2025
+    "IL",   # Dick Durbin       -- announced April 23, 2025
+    "KY",   # Mitch McConnell   -- announced Feb 20, 2025
+    "MI",   # Gary Peters       -- announced Jan 28, 2025
+    "MN",   # Tina Smith        -- announced Feb 13, 2025
+    "NC",   # Thom Tillis       -- announced June 29, 2025
+    "NH",   # Jeanne Shaheen    -- announced March 12, 2025
+    "WY",   # Cynthia Lummis    -- announced Dec 19, 2025
 }
 print(f"  → {len(RETIRING_STATES)} confirmed retirements: {sorted(RETIRING_STATES)}")
 print("  → All other Class II incumbents defaulting to seeking=True")

@@ -6,6 +6,7 @@ Graham,Lindsey,SC,,Republican,1955,Baby Boom Generation,2003,24,True,71,78,Senat
 Merkley,Jeff,OR,,Democrat,1956,Baby Boom Generation,2009,18,True,70,77,Senate
 Risch,James,ID,,Republican,1943,Baby Boom Generation,2009,18,True,83,90,Senate
 Warner,Mark,VA,,Democrat,1954,Baby Boom Generation,2009,18,True,72,79,Senate
+Coons,Christopher,DE,,Democrat,1963,Gen X (13ers),2010,17,True,63,70,Senate
 Markey,Edward,MA,,Democrat,1946,Baby Boom Generation,2013,14,True,80,87,Senate
 Booker,Cory,NJ,,Democrat,1969,Gen X (13ers),2013,14,True,57,64,Senate
 Capito,Shelley,WV,,Republican,1953,Baby Boom Generation,2015,12,True,73,80,Senate
@@ -13,25 +14,24 @@ Cassidy,Bill,LA,,Republican,1957,Baby Boom Generation,2015,12,True,69,76,Senate
 Cotton,Tom,AR,,Republican,1977,Gen X (13ers),2015,12,True,49,56,Senate
 Daines,Steve,MT,,Republican,1962,Gen X (13ers),2015,12,True,64,71,Senate
 Sullivan,Dan,AK,,Republican,1964,Gen X (13ers),2015,12,True,62,69,Senate
-Ernst,Joni,IA,,Republican,1970,Gen X (13ers),2015,12,True,56,63,Senate
-Tillis,Thom,NC,,Republican,1960,Baby Boom Generation,2015,12,True,66,73,Senate
 Rounds,Mike,SD,,Republican,1954,Baby Boom Generation,2015,12,True,72,79,Senate
 Hyde-Smith,Cindy,MS,,Republican,1959,Baby Boom Generation,2018,9,True,67,74,Senate
+Luján,Ben,NM,,Democrat,1972,Gen X (13ers),2021,6,True,54,61,Senate
 Marshall,Roger,KS,,Republican,1960,Baby Boom Generation,2021,6,True,66,73,Senate
-Lummis,Cynthia,WY,,Republican,1954,Baby Boom Generation,2021,6,True,72,79,Senate
 Tuberville,Tommy,AL,,Republican,1954,Baby Boom Generation,2021,6,True,72,79,Senate
 Hickenlooper,John,CO,,Democrat,1952,Baby Boom Generation,2021,6,True,74,81,Senate
 Hagerty,Bill,TN,,Republican,1959,Baby Boom Generation,2021,6,True,67,74,Senate
+Ossoff,Jon,GA,,Democrat,1987,Millennial Generation,2021,6,True,39,46,Senate
 Mullin,Markwayne,OK,,Republican,1977,Gen X (13ers),2023,4,True,49,56,Senate
 Ricketts,Pete,NE,,Republican,1964,Gen X (13ers),2023,4,True,62,69,Senate
 McConnell,Mitch,KY,,Republican,1942,Silent Generation,1985,42,False,84,91,Senate
 Durbin,Richard,IL,,Democrat,1944,Baby Boom Generation,1997,30,False,82,89,Senate
 Shaheen,Jeanne,NH,,Democrat,1947,Baby Boom Generation,2009,18,False,79,86,Senate
-Coons,Christopher,DE,,Democrat,1963,Gen X (13ers),2010,17,False,63,70,Senate
 Peters,Gary,MI,,Democrat,1958,Baby Boom Generation,2015,12,False,68,75,Senate
+Ernst,Joni,IA,,Republican,1970,Gen X (13ers),2015,12,False,56,63,Senate
+Tillis,Thom,NC,,Republican,1960,Baby Boom Generation,2015,12,False,66,73,Senate
 Smith,Tina,MN,,Democrat,1958,Baby Boom Generation,2018,9,False,68,75,Senate
-Luján,Ben,NM,,Democrat,1972,Gen X (13ers),2021,6,False,54,61,Senate
-Ossoff,Jon,GA,,Democrat,1987,Millennial Generation,2021,6,False,39,46,Senate
+Lummis,Cynthia,WY,,Republican,1954,Baby Boom Generation,2021,6,False,72,79,Senate
 Hoyer,Steny,MD,05,Democrat,1939,Silent Generation,1981,46,False,87,90,House
 Rogers,Harold,KY,05,Republican,1937,Silent Generation,1981,46,False,89,92,House
 Smith,Christopher,NJ,04,Republican,1953,Baby Boom Generation,1981,46,False,73,76,House
