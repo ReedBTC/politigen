@@ -71,6 +71,7 @@ politigen/
 | [unitedstates/congress-legislators](https://github.com/unitedstates/congress-legislators) | Every Congress member since 1789 with exact birth dates and term dates |
 | [BLS CPS Table 18b](https://www.bls.gov/cps/cpsaat18b.xlsx) | Employed persons by industry and age bracket (annual average) |
 | [FEC Candidates API](https://api.open.fec.gov/developers) | 2026 House incumbent filings (`incumbent_challenge=I`), used to determine which House members are seeking re-election |
+| [Ballotpedia](https://ballotpedia.org/United_States_Senate_elections,_2026) | Incumbents retiring from public office - hardcoded, needs to be manually updated in the python script |
 
 Generational assignments use **Strauss-Howe** cutoffs:
 
