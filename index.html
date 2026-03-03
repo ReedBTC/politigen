@@ -618,11 +618,15 @@
 <section class="section" id="wall">
   <div class="section-eyebrow">Section 04</div>
   <h2>The <em>Calcification</em> Wall.</h2>
-  <p class="subtitle">33 Senate seats are on the ballot in 2026. These are the Class II incumbents — how long they've been there, and whether they're letting go. Each pillar is one senator. Height = years served. The ones still holding on are lit. The ones stepping aside are faded.</p>
+  <p class="subtitle" id="wall-subtitle">33 Senate seats are on the ballot in 2026. These are the Class II incumbents — how long they've been there, and whether they're letting go. Each pillar is one senator. Height = years served. The ones still holding on are lit. The ones stepping aside are faded.</p>
 
   <div class="wall-stats" id="wall-stats"></div>
 
   <div class="wall-controls">
+    <div class="tabs" style="margin-right:12px">
+      <button class="tab active wall-chamber-tab" onclick="wallChamber('Senate', event)">Senate</button>
+      <button class="tab wall-chamber-tab" onclick="wallChamber('House', event)">House</button>
+    </div>
     <div class="tabs">
       <button class="tab active wall-sort-tab" onclick="wallSort('tenure', event)">By Tenure</button>
       <button class="tab wall-sort-tab" onclick="wallSort('age', event)">By Age</button>
@@ -634,7 +638,7 @@
     <svg id="chart-wall" class="chart-svg"></svg>
   </div>
   <div class="legend" id="wall-legend"></div>
-  <p class="wall-note">Class II incumbents only. Re-election status based on confirmed public announcements. Special elections (FL, OH) not included.</p>
+  <p class="wall-note" id="wall-note">Senate: Class II incumbents only. Re-election status based on confirmed public announcements. Special elections (FL, OH) not included.</p>
 </section>
 
 <!-- FOOTER -->
@@ -1228,13 +1232,31 @@ function buildBLSChart(blsRows) {
 ═══════════════════════════════════════════════════════════ */
 let wallData        = [];
 let wallSortMode    = 'tenure';
+let wallChamberMode = 'Senate';
 
 function buildCalcificationWall(sen26Rows) {
-  // Senate only — filter out any House rows that may exist in the CSV
-  wallData = sen26Rows.filter(r => !r.chamber || r.chamber === 'Senate');
-  buildWallStats(wallData);
+  wallData = sen26Rows;
+  wallChamber('Senate', null);
+}
+
+function wallChamber(chamber, e) {
+  wallChamberMode = chamber;
+  if (e) {
+    document.querySelectorAll('.wall-chamber-tab').forEach(t => t.classList.remove('active'));
+    e.target.classList.add('active');
+  }
+  // Update subtitle and footnote
+  const subtitle = document.getElementById('wall-subtitle');
+  const note     = document.getElementById('wall-note');
+  if (chamber === 'Senate') {
+    subtitle.textContent = '33 Senate seats are on the ballot in 2026. These are the Class II incumbents — how long they\'ve been there, and whether they\'re letting go. Each pillar is one senator. Height = years served. The ones still holding on are lit. The ones stepping aside are faded.';
+    note.textContent = 'Senate: Class II incumbents only. Re-election status based on confirmed public announcements. Special elections (FL, OH) not included.';
+  } else {
+    subtitle.textContent = 'All 435 House seats are on the ballot in 2026. Shown here: every confirmed retiree plus the oldest incumbents seeking re-election — the members most likely to define the "aging in place" story. Each pillar is one member. Height = years served in the House.';
+    note.textContent = 'House: Shows all confirmed retirees + oldest re-election seekers (capped at 65 members). Re-election status based on confirmed public announcements as of March 2026.';
+  }
   renderWall();
-  buildWallLegend(wallData);
+  buildWallLegend(wallData.filter(r => !r.chamber || r.chamber === chamber));
 }
 
 function isSeeking(r) {
@@ -1242,10 +1264,11 @@ function isSeeking(r) {
 }
 
 function buildWallStats(rows) {
-  const seeking     = rows.filter(isSeeking);
+  const isSen     = wallChamberMode === 'Senate';
+  const seeking   = rows.filter(isSeeking);
   const boomersPlus = seeking.filter(r => r.born && r.born <= 1960);
-  const avgYears    = seeking.reduce((s,r) => s + (r.years_served || 0), 0) / (seeking.length || 1);
-  const oldest      = [...seeking].filter(r => r.born).sort((a,b) => a.born - b.born)[0];
+  const avgYears  = seeking.reduce((s,r) => s + (r.years_served || 0), 0) / (seeking.length || 1);
+  const oldest    = [...seeking].filter(r => r.born).sort((a,b) => a.born - b.born)[0];
 
   const statsEl = document.getElementById('wall-stats');
   statsEl.innerHTML = `
@@ -1255,11 +1278,11 @@ function buildWallStats(rows) {
     </div>
     <div class="stat">
       <div class="stat-num wall-stat-em">${avgYears.toFixed(1)}<span style="font-size:18px"> yrs</span></div>
-      <div class="stat-label">Avg Senate tenure<br>among re-election seekers</div>
+      <div class="stat-label">Avg ${isSen ? 'Senate' : 'House'} tenure<br>among re-election seekers</div>
     </div>
     <div class="stat">
       <div class="stat-num wall-stat-em">${oldest ? oldest.age_end_next_term : '—'}</div>
-      <div class="stat-label">${oldest ? oldest.first + ' ' + oldest.last + ' (' + oldest.state + ')' : '—'}<br>age at end of next term if elected</div>
+      <div class="stat-label">${oldest ? oldest.first + ' ' + oldest.last + (oldest.state ? ' (' + oldest.state + (oldest.district && oldest.district !== '' ? '-' + oldest.district : '') + ')' : '') : '—'}<br>age at end of next term if elected</div>
     </div>`;
 }
 
@@ -1287,16 +1310,21 @@ function renderWall() {
   const svg = document.getElementById('chart-wall');
   while (svg.firstChild) svg.removeChild(svg.firstChild);
 
-  let rows = [...wallData];
+  const isSen = wallChamberMode === 'Senate';
+  let rows = wallData.filter(r => (r.chamber || 'Senate') === wallChamberMode);
+
+  buildWallStats(rows);
 
   const ageMode = wallSortMode === 'age';
 
   // Update chart-label dynamically
   const labelEl = document.getElementById('wall-chart-label');
   if (labelEl) {
-    labelEl.textContent = ageMode
-      ? 'Age (years) · 2026 Senate Class II incumbents'
-      : 'Years served in the Senate · 2026 Class II incumbents';
+    if (ageMode) {
+      labelEl.textContent = `Age (years) · 2026 ${isSen ? 'Senate Class II' : 'House'} incumbents`;
+    } else {
+      labelEl.textContent = `Years served in the ${isSen ? 'Senate' : 'House'} · 2026 ${isSen ? 'Class II' : ''} incumbents`;
+    }
   }
 
   // Sort
@@ -1394,9 +1422,10 @@ function renderWall() {
       opacity: seeking ? 0.85 : 0.3,
     }, svg);
 
-    // State label (rotated -45°)
+    // State/district label (rotated -45°)
     const lx = x + BAR_W / 2;
     const ly = PAD.top + CHART_H + 18;
+    const xLabel = (!isSen && r.district) ? `${r.state}-${parseInt(r.district,10)||r.district}` : r.state;
     svgEl('text', {
       x: lx, y: ly,
       'text-anchor': 'end',
@@ -1404,7 +1433,7 @@ function renderWall() {
       'font-size': BAR_W >= 22 ? 9 : 8,
       fill: seeking ? '#ccc' : '#444',
       transform: `rotate(-45 ${lx} ${ly})`,
-    }, svg).textContent = r.state;
+    }, svg).textContent = xLabel;
 
     // Tooltip
     const genLabel = GEN_SHORT[r.generation] || r.generation;
@@ -1413,10 +1442,11 @@ function renderWall() {
       tip.style.left = (e.clientX + 14) + 'px';
       tip.style.top  = (e.clientY - 56) + 'px';
       document.getElementById('tip-year').textContent = `${r.first} ${r.last}`;
+      const distLabel = r.district ? `-${parseInt(r.district,10)||r.district}` : '';
       document.getElementById('tip-body').innerHTML =
-        `${r.state}${r.district ? '-' + r.district : ''} · <span style="color:${partyColor}">${r.party}</span><br>` +
+        `${r.state}${distLabel} · <span style="color:${partyColor}">${r.party}</span><br>` +
         `<span style="color:${color}">${genLabel}</span> · born ${r.born || '?'}<br>` +
-        `In Senate since ${r.since} — <b>${r.years_served} yrs</b><br>` +
+        `In ${isSen ? 'Senate' : 'House'} since ${r.since} — <b>${r.years_served} yrs</b><br>` +
         (seeking
           ? `<span style="color:#66ddbb">✓ Seeking re-election</span><br>Age end of next term: <b>${r.age_end_next_term}</b>`
           : `<span style="color:#666">✗ Not seeking re-election</span>`);

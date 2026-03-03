@@ -12,10 +12,11 @@ Outputs (written to data/):
     data/bls_gen_comparison.csv        — generational share % by BLS sector + officials
     data/presidents.csv                — one row per presidential term start since 1901
     data/senators_2026.csv             — ALL 2026 ballot incumbents (Senate Class II +
-                                         all current House members), with tenure,
+                                         top-65 House members by age), with tenure,
                                          generation, re-election status, and a `chamber`
                                          column ("Senate" or "House") for UI filtering.
-                                         Re-election status is sourced from the FEC API.
+                                         House capped at HOUSE_WALL_CAP: all retirees
+                                         + oldest seekers by birth year.
                                          House rows also include a `district` column.
 """
 
@@ -721,9 +722,20 @@ else:
 # PART 5: 2026 HOUSE ELECTIONS — CALCIFICATION WALL (House tab)
 #
 # Pulls all current House members from the `curr` JSON downloaded in Part 1.
-# Every House seat is up in 2026. Re-election status is determined by querying
-# the FEC API for House incumbents (office=H) who have filed for 2026.
-# Matching is done on (state, district) since state alone is ambiguous.
+# Every House seat is up in 2026. Re-election status is determined using a
+# hardcoded list of confirmed retirements (same pattern as Senate Part 4).
+#
+# WHY NOT FEC API: The FEC incumbent_challenge=I query requires members to have
+# formally filed paperwork — early in the cycle most haven't. Retirement
+# announcements are national news and finite; it's easier to maintain a list
+# of the ~40 people NOT running than to wait for 400+ people to file.
+#
+# HOW TO MAINTAIN: When a new retirement is announced, add their (state, district)
+# tuple and a dated comment. To verify the list is complete, check:
+#   https://ballotpedia.org/List_of_U.S._House_incumbents_who_are_not_running_for_re-election_in_2026
+#
+# The CSV output is capped at HOUSE_WALL_CAP bars total (all retirees first,
+# then the oldest seekers by birth year) to keep the chart readable.
 #
 # Rows are appended to the combined incumbents CSV (senators_2026.csv) with
 # chamber="House" so index.html can filter by chamber tab.
@@ -733,39 +745,69 @@ print("\n" + "=" * 60)
 print("PART 5: 2026 House elections — Calcification Wall (House tab)")
 print("=" * 60)
 
-# ── Query FEC API for 2026 House incumbent filers ────────────────────────────
-print("\nFetching 2026 House incumbent filings from FEC API...")
-house_seeking = set()   # set of (state, district) tuples, e.g. ("CA", "12")
+HOUSE_WALL_CAP = 65   # max bars shown in the House Calcification Wall chart
 
-try:
-    page = 1
-    while True:
-        resp = requests.get(FEC_URL, timeout=30, params={
-            "api_key":             FEC_API_KEY,
-            "office":              "H",
-            "election_year":       2026,
-            "incumbent_challenge": "I",
-            "per_page":            100,
-            "page":                page,
-        })
-        resp.raise_for_status()
-        data    = resp.json()
-        results = data.get("results", [])
-        for r in results:
-            state    = r.get("state", "")
-            district = str(r.get("district", "00")).zfill(2)
-            if state:
-                house_seeking.add((state, district))
-        print(f"  → Page {page}: {len(results)} results")
-        pagination = data.get("pagination", {})
-        if page >= pagination.get("pages", 1):
-            break
-        page += 1
-    print(f"  → {len(house_seeking)} House districts with incumbent filers")
-except Exception as e:
-    print(f"  ⚠ FEC API error: {e}")
-    print("  ⚠ Falling back to empty — all House members will show as not seeking")
-    house_seeking = set()
+# ── Hardcoded House retirement list ──────────────────────────────────────────
+# (state, district_zero_padded) tuples for confirmed non-seekers.
+# Includes: retiring from public office, running for Senate, running for governor,
+# running for attorney general, or otherwise vacating their seat.
+#
+# Last validated against Ballotpedia: 2026-03-03
+# Source: https://ballotpedia.org/United_States_House_of_Representatives_elections,_2026
+#   "Incumbents retiring from public office"  (15 members)
+#   "Representatives running for a U.S. Senate seat"  (13 members)
+#   "Representatives running for governor"  (12 members)
+#   "Representatives running for attorney general"  (1 member)
+# Total confirmed departures as of 2026-03-03: ~41 members
+RETIRING_DISTRICTS = {
+    # ── Retiring from public office ──────────────────────────────────────────
+    ("TX", "37"),   # Lloyd Doggett         D  — announced Dec 5, 2025
+    ("TX", "22"),   # Troy Nehls            R  — announced Nov 29, 2025
+    ("NY", "07"),   # Nydia Velazquez       D  — announced Nov 20, 2025
+    ("TX", "19"),   # Jodey Arrington       R  — announced Nov 11, 2025
+    ("NJ", "12"),   # Bonnie Watson Coleman D  — announced Nov 10, 2025
+    ("CA", "11"),   # Nancy Pelosi          D  — announced Nov 6, 2025
+    ("IL", "04"),   # Jesus Garcia          D  — announced Nov 5, 2025
+    ("ME", "02"),   # Jared Golden          D  — announced Nov 5, 2025
+    ("TX", "10"),   # Michael McCaul        R  — announced Sep 14, 2025
+    ("TX", "08"),   # Morgan Luttrell       R  — announced Sep 11, 2025
+    ("NY", "12"),   # Jerrold Nadler        D  — announced Sep 1, 2025
+    ("IL", "07"),   # Danny K. Davis        D  — announced Jul 31, 2025
+    ("NE", "02"),   # Don Bacon             R  — announced Jun 30, 2025
+    ("PA", "03"),   # Dwight Evans          D  — announced Jun 30, 2025
+    ("IL", "09"),   # Jan Schakowsky        D  — announced May 5, 2025
+    # ── Running for U.S. Senate ──────────────────────────────────────────────
+    ("TX", "30"),   # Jasmine Crockett      D  — announced Dec 8, 2025
+    ("MA", "06"),   # Seth Moulton          D  — announced Oct 15, 2025
+    ("TX", "38"),   # Wesley Hunt           R  — announced Oct 6, 2025
+    ("IA", "02"),   # Ashley Hinson         R  — announced Sep 2, 2025
+    ("AL", "01"),   # Barry Moore           R  — announced Aug 12, 2025
+    ("GA", "10"),   # Mike Collins          R  — announced Jul 28, 2025
+    ("GA", "01"),   # Earl "Buddy" Carter   R  — announced May 8, 2025
+    ("IL", "08"),   # Raja Krishnamoorthi   D  — announced May 7, 2025
+    ("IL", "02"),   # Robin Kelly           D  — announced May 6, 2025
+    ("MN", "02"),   # Angie Craig           D  — announced Apr 29, 2025
+    ("KY", "06"),   # Andy Barr             R  — announced Apr 22, 2025
+    ("MI", "11"),   # Haley Stevens         D  — announced Apr 22, 2025
+    ("NH", "01"),   # Chris Pappas          D  — announced Apr 3, 2025
+    # ── Running for governor ─────────────────────────────────────────────────
+    ("CA", "14"),   # Eric Swalwell         D  — announced Nov 21, 2025
+    ("NY", "21"),   # Elise Stefanik        R  — announced Nov 7, 2025  (appointed Amb.)
+    ("AZ", "01"),   # David Schweikert      R  — announced Sep 30, 2025
+    ("WI", "07"),   # Tom Tiffany           R  — announced Sep 26, 2025
+    ("GA", "11"),   # Barry Loudermilk      R  — announced Feb 4, 2026
+    ("FL", "16"),   # Vern Buchanan         R  — announced Jan 27, 2026
+    ("FL", "02"),   # Neal Dunn             R  — announced Jan 13, 2026
+    ("CA", "26"),   # Julia Brownley        D  — announced Jan 8, 2026
+    ("MD", "05"),   # Steny Hoyer           D  — announced Jan 7, 2026
+    ("NV", "02"),   # Mark Amodei           R  — announced Feb 6, 2026
+    ("WA", "04"),   # Dan Newhouse          R  — announced Dec 17, 2025
+    ("TX", "33"),   # Marc Veasey           D  — announced Dec 15, 2025
+    # ── Running for attorney general ─────────────────────────────────────────
+    ("TX", "05"),   # Lance Gooden          R  — running for TX AG
+}
+print(f"  → {len(RETIRING_DISTRICTS)} confirmed House non-seekers hardcoded")
+print("  → All other House incumbents defaulting to seeking=True")
 
 # ── Helper: first House term start year ───────────────────────────────────────
 def first_house_year(leg):
@@ -820,7 +862,7 @@ for leg in curr:
     party    = most_recent_rep.get("party", get_party(leg))
     since    = first_house_year(leg)
 
-    seeking = (state, district) in house_seeking
+    seeking = (state, district) not in RETIRING_DISTRICTS
 
     # Years served as of Jan 2027 (end of current 119th Congress term)
     years_served  = (2027 - since)  if since else None
@@ -843,13 +885,31 @@ for leg in curr:
         "chamber":            "House",
     })
 
-house26_rows.sort(key=lambda r: (
-    0 if r["seeking_reelection"] else 1,
-    -(r["years_served"] or 0)
-))
+print(f"\n  → {len(house26_rows)} current House members found")
 
-house26_df = pd.DataFrame(house26_rows)
-print(f"\n  → {len(house26_df)} current House members found")
+# ── Cap to HOUSE_WALL_CAP bars: all retirees + oldest seekers ─────────────────
+# This keeps the chart readable. All confirmed retirees are always included;
+# remaining slots are filled by the oldest seekers (lowest birth year).
+retirees = [r for r in house26_rows if not r["seeking_reelection"]]
+seekers  = [r for r in house26_rows if  r["seeking_reelection"]]
+
+# Sort seekers oldest-first (by birth year ascending = oldest first)
+seekers.sort(key=lambda r: (r["born"] or 9999))
+
+remaining_slots = max(0, HOUSE_WALL_CAP - len(retirees))
+seekers_capped  = seekers[:remaining_slots]
+
+print(f"  → Retirees included: {len(retirees)}")
+print(f"  → Oldest seekers included: {len(seekers_capped)} of {len(seekers)} "
+      f"(cap={HOUSE_WALL_CAP}, {len(seekers) - len(seekers_capped)} omitted)")
+
+# Final list: retirees first (sorted by age desc), then oldest seekers (age desc)
+retirees.sort(key=lambda r: (r["born"] or 9999))          # oldest retiree first
+seekers_capped.sort(key=lambda r: (r["born"] or 9999))    # oldest seeker first
+house26_capped = retirees + seekers_capped
+
+house26_df = pd.DataFrame(house26_capped)
+print(f"  → Final House rows for CSV: {len(house26_df)}")
 
 # ── Combine Senate + House and write single CSV ───────────────────────────────
 combined26_df = pd.concat([sen26_df, house26_df], ignore_index=True)
