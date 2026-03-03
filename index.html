@@ -17,7 +17,7 @@
     --muted:   #aaa;
     --red:     #e05252;
     --gi:      #3d7a66;
-    --sil:     #4488cc;
+    --sil:     #7F7F7F;
     --boom:    #f08050;
     --genx:    #bb77ee;
     --mil:     #66ddbb;
@@ -687,8 +687,8 @@ const GEN_SHORT = {
   'Millennial Generation':  'Millennial',
 };
 const COLORS = {
-  'Progressive Generation': '#1a3566',
-  'Silent Generation':      '#4488cc',
+  'Progressive Generation': '#a0a0a0',  // lighter grey
+  'Silent Generation':      '#7F7F7F',  // mid grey
   'Missionary Generation':  '#993d18',
   'Baby Boom Generation':   '#f08050',
   'Lost Generation':        '#6b4488',
@@ -719,11 +719,11 @@ const HOUSE_COL_TO_GEN = {
 };
 
 const ERAS = [
-  { label:'PROGRESSIVE', color:'#1a3566', start:1901, end:1912 },
+  { label:'PROGRESSIVE', color:'#a0a0a0', start:1901, end:1912 },
   { label:'MISSIONARY',  color:'#993d18', start:1913, end:1934 },
   { label:'LOST',        color:'#6b4488', start:1935, end:1954 },
   { label:'G.I.',        color:'#3d7a66', start:1955, end:1975 },
-  { label:'SILENT',      color:'#4488cc', start:1977, end:1991 },
+  { label:'SILENT',      color:'#7F7F7F', start:1977, end:1991 },
   { label:'BOOMER',      color:'#f08050', start:1993, end:2021 },
   { label:'GEN X',       color:'#bb77ee', start:2023, end:2025 },
 ];
@@ -1153,7 +1153,7 @@ const BLS_COLORS = {
   'Millennial': '#66ddbb',
   'Gen X':      '#bb77ee',
   'Boomer':     '#f08050',
-  'Silent':     '#4488cc',
+  'Silent':     '#7F7F7F',
 };
 
 function buildBLSChart(blsRows) {
