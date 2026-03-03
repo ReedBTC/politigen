@@ -570,8 +570,13 @@
       House Mean Age
     </div>
     <div class="age-legend-item">
-      <div style="width:9px;height:9px;border-radius:50%;background:#c8c0b4;flex-shrink:0"></div>
-      President (age at start of term)
+      <div style="display:flex;gap:3px;align-items:center;flex-shrink:0">
+        <div style="width:7px;height:7px;border-radius:50%;background:#a0a0a0"></div>
+        <div style="width:7px;height:7px;border-radius:50%;background:#993d18"></div>
+        <div style="width:7px;height:7px;border-radius:50%;background:#3d7a66"></div>
+        <div style="width:7px;height:7px;border-radius:50%;background:#f08050"></div>
+      </div>
+      President (by generation)
     </div>
   </div>
 
@@ -991,20 +996,19 @@ function buildAgeChart(histRows, presRows) {
 
   // President dots — plotted at their actual age (year - birth_year)
   const tip = document.getElementById('tooltip');
-  const DOT_COLOR = '#c8c0b4';
-
   if (presRows && presRows.length) {
     for (const p of presRows) {
       const presAge = p.year - p.birth_year;
       const cx = xS(p.year);
       const cy = yS(presAge);
+      const dotColor = COLORS[p.generation] || '#c8c0b4';
 
       // Glow ring
-      svgEl('circle', {cx, cy, r:7, fill:DOT_COLOR, opacity:0.15}, svg);
+      svgEl('circle', {cx, cy, r:7, fill:dotColor, opacity:0.18}, svg);
       // Filled dot
       const dot = svgEl('circle', {
         cx, cy, r:4.5,
-        fill: DOT_COLOR,
+        fill: dotColor,
         stroke: '#0c0c0f',
         'stroke-width': 1.5,
         style: 'cursor:pointer',
