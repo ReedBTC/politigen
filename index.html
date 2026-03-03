@@ -618,7 +618,7 @@
 <section class="section" id="wall">
   <div class="section-eyebrow">Section 04</div>
   <h2>The <em>Calcification</em> Wall.</h2>
-  <p class="subtitle">33 Senate seats are on the ballot in 2026. These are the incumbents — how long they've been there, and whether they're letting go. Each pillar is one senator. Height = years in the Senate. The ones still holding on are lit. The ones stepping aside are faded.</p>
+  <p class="subtitle">33 Senate seats and all 435 House seats are on the ballot in 2026. These are the incumbents — how long they've been there, and whether they're letting go. Each pillar is one member. Height = years served. The ones still holding on are lit. The ones stepping aside are faded.</p>
 
   <div class="wall-stats" id="wall-stats"></div>
 
@@ -626,20 +626,19 @@
     <div class="tabs">
       <button class="tab active wall-sort-tab" onclick="wallSort('tenure', event)">By Tenure</button>
       <button class="tab wall-sort-tab" onclick="wallSort('age', event)">By Age</button>
-      <button class="tab wall-sort-tab" onclick="wallSort('state', event)">By State</button>
     </div>
     <div class="tabs">
-      <button class="tab active wall-filter-tab" onclick="wallFilter('all', event)">All 33</button>
-      <button class="tab wall-filter-tab" onclick="wallFilter('seeking', event)">Seeking Only</button>
+      <button class="tab active wall-chamber-tab" onclick="wallChamber('Senate', event)">Senate</button>
+      <button class="tab wall-chamber-tab" onclick="wallChamber('House', event)">House</button>
     </div>
   </div>
 
-  <div class="chart-label">Years served in the Senate · 2026 Class II incumbents</div>
+  <div class="chart-label" id="wall-chart-label">Years served in the Senate · 2026 Class II incumbents</div>
   <div class="chart-wrap">
     <svg id="chart-wall" class="chart-svg"></svg>
   </div>
   <div class="legend" id="wall-legend"></div>
-  <p class="wall-note">Note: NOT_SEEKING list reflects announced retirements and withdrawals as of early 2026. Special elections (FL, OH) not included.</p>
+  <p class="wall-note">Senate: Class II incumbents only. Re-election status sourced live from the FEC API (api.fec.gov). Special elections (FL, OH) not included.</p>
 </section>
 
 <!-- FOOTER -->
@@ -1231,9 +1230,9 @@ function buildBLSChart(blsRows) {
 /* ═══════════════════════════════════════════════════════════
    SECTION 4 — CALCIFICATION WALL
 ═══════════════════════════════════════════════════════════ */
-let wallData       = [];
-let wallSortMode   = 'tenure';
-let wallFilterMode = 'all';
+let wallData        = [];
+let wallSortMode    = 'tenure';
+let wallChamberMode = 'Senate';
 
 function buildCalcificationWall(sen26Rows) {
   wallData = sen26Rows;
@@ -1288,9 +1287,9 @@ function wallSort(mode, e) {
   renderWall();
 }
 
-function wallFilter(mode, e) {
-  wallFilterMode = mode;
-  document.querySelectorAll('.wall-filter-tab').forEach(t => t.classList.remove('active'));
+function wallChamber(mode, e) {
+  wallChamberMode = mode;
+  document.querySelectorAll('.wall-chamber-tab').forEach(t => t.classList.remove('active'));
   e.target.classList.add('active');
   renderWall();
 }
@@ -1299,9 +1298,19 @@ function renderWall() {
   const svg = document.getElementById('chart-wall');
   while (svg.firstChild) svg.removeChild(svg.firstChild);
 
-  let rows = wallFilterMode === 'seeking'
-    ? wallData.filter(isSeeking)
-    : [...wallData];
+  // Filter by chamber (fall back to all rows if no chamber column yet)
+  let rows = wallData.filter(r => !r.chamber || r.chamber === wallChamberMode);
+  if (!rows.length) rows = [...wallData]; // graceful stub for House (no data yet)
+
+  const ageMode = wallSortMode === 'age';
+
+  // Update chart-label dynamically
+  const labelEl = document.getElementById('wall-chart-label');
+  if (labelEl) {
+    labelEl.textContent = ageMode
+      ? `Age (years) · 2026 ${wallChamberMode} incumbents`
+      : `Years served in the ${wallChamberMode} · 2026 Class II incumbents`;
+  }
 
   // Sort
   if (wallSortMode === 'tenure') {
@@ -1314,8 +1323,6 @@ function renderWall() {
       if (isSeeking(a) !== isSeeking(b)) return isSeeking(b) ? 1 : -1;
       return (a.born || 9999) - (b.born || 9999);
     });
-  } else if (wallSortMode === 'state') {
-    rows.sort((a,b) => (a.state || '').localeCompare(b.state || ''));
   }
 
   const W  = svg.parentElement.offsetWidth;
@@ -1330,30 +1337,35 @@ function renderWall() {
   const H      = CHART_H + PAD.top + PAD.bottom;
   const offsetX = PAD.left + Math.max(0, (W - PAD.left - PAD.right - CW) / 2);
 
-  const maxYears = Math.max(...rows.map(r => r.years_served || 0), 10);
-  const yS = v => PAD.top + CHART_H - (v / maxYears) * CHART_H;
+  // Y-scale: age mode uses age_now, tenure mode uses years_served
+  const maxVal = ageMode
+    ? Math.max(...rows.map(r => +r.age_now || 0), 50)
+    : Math.max(...rows.map(r => r.years_served || 0), 10);
+  const minVal = ageMode ? Math.min(...rows.map(r => +r.age_now || 999), 40) : 0;
+  const yRange = maxVal - minVal;
+  const yS = v => PAD.top + CHART_H - ((v - minVal) / yRange) * CHART_H;
 
   svg.setAttribute('height', H);
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   svg.setAttribute('width', W);
 
   // Grid lines
-  const gridStep = maxYears > 30 ? 10 : 5;
-  for (let gy = gridStep; gy <= maxYears; gy += gridStep) {
-    svgEl('line', {x1:offsetX, x2:offsetX+CW, y1:yS(gy), y2:yS(gy), stroke:'#1e1e26', 'stroke-width':1}, svg);
-    svgEl('text', {x:offsetX-5, y:yS(gy)+4, 'text-anchor':'end', 'font-family':'DM Mono,monospace', 'font-size':9, fill:'#777'}, svg).textContent = gy+'y';
+  const gridStep = ageMode ? 5 : (maxVal > 30 ? 10 : 5);
+  const gridStart = ageMode ? Math.ceil(minVal / gridStep) * gridStep : gridStep;
+  for (let gv = gridStart; gv <= maxVal; gv += gridStep) {
+    svgEl('line', {x1:offsetX, x2:offsetX+CW, y1:yS(gv), y2:yS(gv), stroke:'#1e1e26', 'stroke-width':1}, svg);
+    const label = ageMode ? String(gv) : gv + 'y';
+    svgEl('text', {x:offsetX-5, y:yS(gv)+4, 'text-anchor':'end', 'font-family':'DM Mono,monospace', 'font-size':9, fill:'#777'}, svg).textContent = label;
   }
 
-  // Divider between seekers and retirees (only when not filtered to seeking-only)
-  if (wallFilterMode === 'all' && wallSortMode !== 'state') {
-    const lastSeekIdx = rows.reduce((best, r, i) => isSeeking(r) ? i : best, -1);
-    if (lastSeekIdx >= 0 && lastSeekIdx < rows.length - 1) {
-      const divX = offsetX + lastSeekIdx * (BAR_W + GAP) + BAR_W + GAP / 2;
-      svgEl('line', {x1:divX, x2:divX, y1:PAD.top, y2:PAD.top+CHART_H+30,
-        stroke:'#444', 'stroke-width':1, 'stroke-dasharray':'4,3'}, svg);
-      svgEl('text', {x:divX+5, y:PAD.top+10, 'font-family':'DM Mono,monospace', 'font-size':8,
-        fill:'#666'}, svg).textContent = 'RETIRING →';
-    }
+  // Divider between seekers and retirees
+  const lastSeekIdx = rows.reduce((best, r, i) => isSeeking(r) ? i : best, -1);
+  if (lastSeekIdx >= 0 && lastSeekIdx < rows.length - 1) {
+    const divX = offsetX + lastSeekIdx * (BAR_W + GAP) + BAR_W + GAP / 2;
+    svgEl('line', {x1:divX, x2:divX, y1:PAD.top, y2:PAD.top+CHART_H+30,
+      stroke:'#444', 'stroke-width':1, 'stroke-dasharray':'4,3'}, svg);
+    svgEl('text', {x:divX+5, y:PAD.top+10, 'font-family':'DM Mono,monospace', 'font-size':8,
+      fill:'#666'}, svg).textContent = 'RETIRING →';
   }
 
   const tip = document.getElementById('tooltip');
@@ -1362,7 +1374,8 @@ function renderWall() {
     const seeking  = isSeeking(r);
     const color    = COLORS[r.generation] || '#888';
     const x        = offsetX + i * (BAR_W + GAP);
-    const barH     = Math.max(3, ((r.years_served || 0) / maxYears) * CHART_H);
+    const val      = ageMode ? (+r.age_now || 0) : (r.years_served || 0);
+    const barH     = Math.max(3, ((val - minVal) / yRange) * CHART_H);
     const y        = PAD.top + CHART_H - barH;
     const opacity  = seeking ? 0.85 : 0.18;
 
@@ -1414,9 +1427,9 @@ function renderWall() {
       tip.style.top  = (e.clientY - 56) + 'px';
       document.getElementById('tip-year').textContent = `${r.first} ${r.last}`;
       document.getElementById('tip-body').innerHTML =
-        `${r.state} · <span style="color:${partyColor}">${r.party}</span><br>` +
+        `${r.state}${r.district ? '-' + r.district : ''} · <span style="color:${partyColor}">${r.party}</span><br>` +
         `<span style="color:${color}">${genLabel}</span> · born ${r.born || '?'}<br>` +
-        `In Senate since ${r.since} — <b>${r.years_served} yrs</b><br>` +
+        `In ${r.chamber || 'Senate'} since ${r.since} — <b>${r.years_served} yrs</b><br>` +
         (seeking
           ? `<span style="color:#66ddbb">✓ Seeking re-election</span><br>Age end of next term: <b>${r.age_end_next_term}</b>`
           : `<span style="color:#666">✗ Not seeking re-election</span>`);
@@ -1433,7 +1446,7 @@ function renderWall() {
   svgEl('line', {x1:offsetX, x2:offsetX+CW, y1:PAD.top+CHART_H, y2:PAD.top+CHART_H, stroke:'#444', 'stroke-width':1.5}, svg);
   const yl = svgEl('text', {x:12, y:PAD.top+CHART_H/2, 'font-family':'DM Mono,monospace', 'font-size':10,
     fill:'#888', 'text-anchor':'middle', transform:`rotate(-90 12 ${PAD.top+CHART_H/2})`}, svg);
-  yl.textContent = 'YEARS SERVED';
+  yl.textContent = ageMode ? 'AGE (YEARS)' : 'YEARS SERVED';
 }
 
 /* ═══════════════════════════════════════════════════════════

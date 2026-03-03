@@ -1,36 +1,472 @@
-last,first,state,party,born,generation,since,years_served,seeking_reelection,age_now,age_end_next_term
-McConnell,Mitch,KY,Republican,1942,Silent Generation,1985,42,True,84,91
-Collins,Susan,ME,Republican,1952,Baby Boom Generation,1997,30,True,74,81
-Durbin,Richard,IL,Democrat,1944,Baby Boom Generation,1997,30,True,82,89
-Reed,John,RI,Democrat,1949,Baby Boom Generation,1997,30,True,77,84
-Cornyn,John,TX,Republican,1952,Baby Boom Generation,2002,25,True,74,81
-Graham,Lindsey,SC,Republican,1955,Baby Boom Generation,2003,24,True,71,78
-Merkley,Jeff,OR,Democrat,1956,Baby Boom Generation,2009,18,True,70,77
-Risch,James,ID,Republican,1943,Baby Boom Generation,2009,18,True,83,90
-Shaheen,Jeanne,NH,Democrat,1947,Baby Boom Generation,2009,18,True,79,86
-Warner,Mark,VA,Democrat,1954,Baby Boom Generation,2009,18,True,72,79
-Coons,Christopher,DE,Democrat,1963,Gen X (13ers),2010,17,True,63,70
-Markey,Edward,MA,Democrat,1946,Baby Boom Generation,2013,14,True,80,87
-Booker,Cory,NJ,Democrat,1969,Gen X (13ers),2013,14,True,57,64
-Capito,Shelley,WV,Republican,1953,Baby Boom Generation,2015,12,True,73,80
-Cassidy,Bill,LA,Republican,1957,Baby Boom Generation,2015,12,True,69,76
-Peters,Gary,MI,Democrat,1958,Baby Boom Generation,2015,12,True,68,75
-Cotton,Tom,AR,Republican,1977,Gen X (13ers),2015,12,True,49,56
-Daines,Steve,MT,Republican,1962,Gen X (13ers),2015,12,True,64,71
-Sullivan,Dan,AK,Republican,1964,Gen X (13ers),2015,12,True,62,69
-Ernst,Joni,IA,Republican,1970,Gen X (13ers),2015,12,True,56,63
-Tillis,Thom,NC,Republican,1960,Baby Boom Generation,2015,12,True,66,73
-Rounds,Mike,SD,Republican,1954,Baby Boom Generation,2015,12,True,72,79
-Smith,Tina,MN,Democrat,1958,Baby Boom Generation,2018,9,True,68,75
-Hyde-Smith,Cindy,MS,Republican,1959,Baby Boom Generation,2018,9,True,67,74
-Luján,Ben,NM,Democrat,1972,Gen X (13ers),2021,6,True,54,61
-Marshall,Roger,KS,Republican,1960,Baby Boom Generation,2021,6,True,66,73
-Lummis,Cynthia,WY,Republican,1954,Baby Boom Generation,2021,6,True,72,79
-Tuberville,Tommy,AL,Republican,1954,Baby Boom Generation,2021,6,True,72,79
-Hickenlooper,John,CO,Democrat,1952,Baby Boom Generation,2021,6,True,74,81
-Hagerty,Bill,TN,Republican,1959,Baby Boom Generation,2021,6,True,67,74
-Ossoff,Jon,GA,Democrat,1987,Millennial Generation,2021,6,True,39,46
-Warnock,Raphael,GA,Democrat,1969,Gen X (13ers),2021,6,True,57,64
-Mullin,Markwayne,OK,Republican,1977,Gen X (13ers),2023,4,True,49,56
-Ricketts,Pete,NE,Republican,1964,Gen X (13ers),2023,4,True,62,69
-Padilla,Alejandro,CA,Democrat,1973,Gen X (13ers),2021,6,False,53,60
+last,first,state,district,party,born,generation,since,years_served,seeking_reelection,age_now,age_end_next_term,chamber
+McConnell,Mitch,KY,,Republican,1942,Silent Generation,1985,42,True,84,91,Senate
+Collins,Susan,ME,,Republican,1952,Baby Boom Generation,1997,30,True,74,81,Senate
+Reed,John,RI,,Democrat,1949,Baby Boom Generation,1997,30,True,77,84,Senate
+Cornyn,John,TX,,Republican,1952,Baby Boom Generation,2002,25,True,74,81,Senate
+Graham,Lindsey,SC,,Republican,1955,Baby Boom Generation,2003,24,True,71,78,Senate
+Merkley,Jeff,OR,,Democrat,1956,Baby Boom Generation,2009,18,True,70,77,Senate
+Risch,James,ID,,Republican,1943,Baby Boom Generation,2009,18,True,83,90,Senate
+Warner,Mark,VA,,Democrat,1954,Baby Boom Generation,2009,18,True,72,79,Senate
+Markey,Edward,MA,,Democrat,1946,Baby Boom Generation,2013,14,True,80,87,Senate
+Booker,Cory,NJ,,Democrat,1969,Gen X (13ers),2013,14,True,57,64,Senate
+Capito,Shelley,WV,,Republican,1953,Baby Boom Generation,2015,12,True,73,80,Senate
+Cassidy,Bill,LA,,Republican,1957,Baby Boom Generation,2015,12,True,69,76,Senate
+Cotton,Tom,AR,,Republican,1977,Gen X (13ers),2015,12,True,49,56,Senate
+Daines,Steve,MT,,Republican,1962,Gen X (13ers),2015,12,True,64,71,Senate
+Sullivan,Dan,AK,,Republican,1964,Gen X (13ers),2015,12,True,62,69,Senate
+Ernst,Joni,IA,,Republican,1970,Gen X (13ers),2015,12,True,56,63,Senate
+Tillis,Thom,NC,,Republican,1960,Baby Boom Generation,2015,12,True,66,73,Senate
+Rounds,Mike,SD,,Republican,1954,Baby Boom Generation,2015,12,True,72,79,Senate
+Hyde-Smith,Cindy,MS,,Republican,1959,Baby Boom Generation,2018,9,True,67,74,Senate
+Marshall,Roger,KS,,Republican,1960,Baby Boom Generation,2021,6,True,66,73,Senate
+Lummis,Cynthia,WY,,Republican,1954,Baby Boom Generation,2021,6,True,72,79,Senate
+Tuberville,Tommy,AL,,Republican,1954,Baby Boom Generation,2021,6,True,72,79,Senate
+Hickenlooper,John,CO,,Democrat,1952,Baby Boom Generation,2021,6,True,74,81,Senate
+Hagerty,Bill,TN,,Republican,1959,Baby Boom Generation,2021,6,True,67,74,Senate
+Mullin,Markwayne,OK,,Republican,1977,Gen X (13ers),2023,4,True,49,56,Senate
+Ricketts,Pete,NE,,Republican,1964,Gen X (13ers),2023,4,True,62,69,Senate
+Durbin,Richard,IL,,Democrat,1944,Baby Boom Generation,1997,30,False,82,89,Senate
+Shaheen,Jeanne,NH,,Democrat,1947,Baby Boom Generation,2009,18,False,79,86,Senate
+Coons,Christopher,DE,,Democrat,1963,Gen X (13ers),2010,17,False,63,70,Senate
+Peters,Gary,MI,,Democrat,1958,Baby Boom Generation,2015,12,False,68,75,Senate
+Smith,Tina,MN,,Democrat,1958,Baby Boom Generation,2018,9,False,68,75,Senate
+Luján,Ben,NM,,Democrat,1972,Gen X (13ers),2021,6,False,54,61,Senate
+Ossoff,Jon,GA,,Democrat,1987,Millennial Generation,2021,6,False,39,46,Senate
+Hoyer,Steny,MD,05,Democrat,1939,Silent Generation,1981,46,False,87,90,House
+Rogers,Harold,KY,05,Republican,1937,Silent Generation,1981,46,False,89,92,House
+Smith,Christopher,NJ,04,Republican,1953,Baby Boom Generation,1981,46,False,73,76,House
+Kaptur,Marcy,OH,09,Democrat,1946,Baby Boom Generation,1983,44,False,80,83,House
+Pallone,Frank,NJ,06,Democrat,1951,Baby Boom Generation,1987,40,False,75,78,House
+Pelosi,Nancy,CA,11,Democrat,1940,Silent Generation,1987,40,False,86,89,House
+Mfume,Kweisi,MD,07,Democrat,1948,Baby Boom Generation,1987,40,False,78,81,House
+Neal,Richard,MA,01,Democrat,1949,Baby Boom Generation,1989,38,False,77,80,House
+DeLauro,Rosa,CT,03,Democrat,1943,Baby Boom Generation,1991,36,False,83,86,House
+Norton,Eleanor,DC,00,Democrat,1937,Silent Generation,1991,36,False,89,92,House
+Waters,Maxine,CA,43,Democrat,1938,Silent Generation,1991,36,False,88,91,House
+Nadler,Jerrold,NY,12,Democrat,1947,Baby Boom Generation,1992,35,False,79,82,House
+Bishop,Sanford,GA,02,Democrat,1947,Baby Boom Generation,1993,34,False,79,82,House
+Calvert,Ken,CA,41,Republican,1953,Baby Boom Generation,1993,34,False,73,76,House
+Clyburn,James,SC,06,Democrat,1940,Silent Generation,1993,34,False,86,89,House
+Lucas,Frank,OK,03,Republican,1960,Baby Boom Generation,1993,34,False,66,69,House
+Scott,Robert,VA,03,Democrat,1947,Baby Boom Generation,1993,34,False,79,82,House
+Thompson,Bennie,MS,02,Democrat,1948,Baby Boom Generation,1993,34,False,78,81,House
+Velázquez,Nydia,NY,07,Democrat,1953,Baby Boom Generation,1993,34,False,73,76,House
+Fields,Cleo,LA,06,Democrat,1962,Gen X (13ers),1993,34,False,64,67,House
+Doggett,Lloyd,TX,37,Democrat,1946,Baby Boom Generation,1995,32,False,80,83,House
+Lofgren,Zoe,CA,18,Democrat,1947,Baby Boom Generation,1995,32,False,79,82,House
+Aderholt,Robert,AL,04,Republican,1965,Gen X (13ers),1997,30,False,61,64,House
+Davis,Danny,IL,07,Democrat,1941,Silent Generation,1997,30,False,85,88,House
+DeGette,Diana,CO,01,Democrat,1957,Baby Boom Generation,1997,30,False,69,72,House
+McGovern,James,MA,02,Democrat,1959,Baby Boom Generation,1997,30,False,67,70,House
+Meeks,Gregory,NY,05,Democrat,1953,Baby Boom Generation,1997,30,False,73,76,House
+Sherman,Brad,CA,32,Democrat,1954,Baby Boom Generation,1997,30,False,72,75,House
+Smith,Adam,WA,09,Democrat,1965,Gen X (13ers),1997,30,False,61,64,House
+Sessions,Pete,TX,17,Republican,1955,Baby Boom Generation,1997,30,False,71,74,House
+Larson,John,CT,01,Democrat,1948,Baby Boom Generation,1999,28,False,78,81,House
+Schakowsky,Janice,IL,09,Democrat,1944,Baby Boom Generation,1999,28,False,82,85,House
+Simpson,Michael,ID,02,Republican,1950,Baby Boom Generation,1999,28,False,76,79,House
+Thompson,Mike,CA,04,Democrat,1951,Baby Boom Generation,1999,28,False,75,78,House
+Graves,Sam,MO,06,Republican,1963,Gen X (13ers),2001,26,False,63,66,House
+Larsen,Rick,WA,02,Democrat,1965,Gen X (13ers),2001,26,False,61,64,House
+Lynch,Stephen,MA,08,Democrat,1955,Baby Boom Generation,2001,26,False,71,74,House
+McCollum,Betty,MN,04,Democrat,1954,Baby Boom Generation,2001,26,False,72,75,House
+Wilson,Joe,SC,02,Republican,1947,Baby Boom Generation,2001,26,False,79,82,House
+Issa,Darrell,CA,48,Republican,1953,Baby Boom Generation,2001,26,False,73,76,House
+Carter,John,TX,31,Republican,1941,Silent Generation,2003,24,False,85,88,House
+Cole,Tom,OK,04,Republican,1949,Baby Boom Generation,2003,24,False,77,80,House
+Diaz-Balart,Mario,FL,26,Republican,1961,Gen X (13ers),2003,24,False,65,68,House
+Rogers,Mike,AL,03,Republican,1958,Baby Boom Generation,2003,24,False,68,71,House
+Scott,David,GA,13,Democrat,1945,Baby Boom Generation,2003,24,False,81,84,House
+Sánchez,Linda,CA,38,Democrat,1969,Gen X (13ers),2003,24,False,57,60,House
+Turner,Michael,OH,10,Republican,1960,Baby Boom Generation,2003,24,False,66,69,House
+Case,Ed,HI,01,Democrat,1952,Baby Boom Generation,2003,24,False,74,77,House
+Cleaver,Emanuel,MO,05,Democrat,1944,Baby Boom Generation,2005,22,False,82,85,House
+Costa,Jim,CA,21,Democrat,1952,Baby Boom Generation,2005,22,False,74,77,House
+Cuellar,Henry,TX,28,Democrat,1955,Baby Boom Generation,2005,22,False,71,74,House
+Foxx,Virginia,NC,05,Republican,1943,Baby Boom Generation,2005,22,False,83,86,House
+Green,Al,TX,09,Democrat,1947,Baby Boom Generation,2005,22,False,79,82,House
+Matsui,Doris,CA,07,Democrat,1944,Baby Boom Generation,2005,22,False,82,85,House
+McCaul,Michael,TX,10,Republican,1962,Gen X (13ers),2005,22,False,64,67,House
+Moore,Gwen,WI,04,Democrat,1951,Baby Boom Generation,2005,22,False,75,78,House
+Wasserman Schultz,Debbie,FL,25,Democrat,1966,Gen X (13ers),2005,22,False,60,63,House
+Bilirakis,Gus,FL,12,Republican,1963,Gen X (13ers),2007,20,False,63,66,House
+Buchanan,Vern,FL,16,Republican,1951,Baby Boom Generation,2007,20,False,75,78,House
+Castor,Kathy,FL,14,Democrat,1966,Gen X (13ers),2007,20,False,60,63,House
+Clarke,Yvette,NY,09,Democrat,1964,Gen X (13ers),2007,20,False,62,65,House
+Cohen,Steve,TN,09,Democrat,1949,Baby Boom Generation,2007,20,False,77,80,House
+Courtney,Joe,CT,02,Democrat,1953,Baby Boom Generation,2007,20,False,73,76,House
+Johnson,Henry,GA,04,Democrat,1954,Baby Boom Generation,2007,20,False,72,75,House
+Jordan,Jim,OH,04,Republican,1964,Gen X (13ers),2007,20,False,62,65,House
+Latta,Robert,OH,05,Republican,1956,Baby Boom Generation,2007,20,False,70,73,House
+Smith,Adrian,NE,03,Republican,1970,Gen X (13ers),2007,20,False,56,59,House
+Walberg,Tim,MI,05,Republican,1951,Baby Boom Generation,2007,20,False,75,78,House
+Wittman,Robert,VA,01,Republican,1959,Baby Boom Generation,2007,20,False,67,70,House
+Carson,André,IN,07,Democrat,1974,Gen X (13ers),2008,19,False,52,55,House
+Scalise,Steve,LA,01,Republican,1965,Gen X (13ers),2008,19,False,61,64,House
+Foster,Bill,IL,11,Democrat,1955,Baby Boom Generation,2008,19,False,71,74,House
+Chu,Judy,CA,28,Democrat,1953,Baby Boom Generation,2009,18,False,73,76,House
+Garamendi,John,CA,08,Democrat,1945,Baby Boom Generation,2009,18,False,81,84,House
+Guthrie,Brett,KY,02,Republican,1964,Gen X (13ers),2009,18,False,62,65,House
+Himes,James,CT,04,Democrat,1966,Gen X (13ers),2009,18,False,60,63,House
+McClintock,Tom,CA,05,Republican,1956,Baby Boom Generation,2009,18,False,70,73,House
+Pingree,Chellie,ME,01,Democrat,1955,Baby Boom Generation,2009,18,False,71,74,House
+Quigley,Mike,IL,05,Democrat,1958,Baby Boom Generation,2009,18,False,68,71,House
+Thompson,Glenn,PA,15,Republican,1959,Baby Boom Generation,2009,18,False,67,70,House
+Tonko,Paul,NY,20,Democrat,1949,Baby Boom Generation,2009,18,False,77,80,House
+Titus,Dina,NV,01,Democrat,1950,Baby Boom Generation,2009,18,False,76,79,House
+Stutzman,Marlin,IN,03,Republican,1976,Gen X (13ers),2010,17,False,50,53,House
+Crawford,Eric,AR,01,Republican,1966,Gen X (13ers),2011,16,False,60,63,House
+DesJarlais,Scott,TN,04,Republican,1964,Gen X (13ers),2011,16,False,62,65,House
+Fleischmann,Charles,TN,03,Republican,1962,Gen X (13ers),2011,16,False,64,67,House
+Gosar,Paul,AZ,09,Republican,1958,Baby Boom Generation,2011,16,False,68,71,House
+Griffith,H.,VA,09,Republican,1958,Baby Boom Generation,2011,16,False,68,71,House
+Harris,Andy,MD,01,Republican,1957,Baby Boom Generation,2011,16,False,69,72,House
+Huizenga,Bill,MI,04,Republican,1969,Gen X (13ers),2011,16,False,57,60,House
+Keating,William,MA,09,Democrat,1952,Baby Boom Generation,2011,16,False,74,77,House
+Kelly,Mike,PA,16,Republican,1948,Baby Boom Generation,2011,16,False,78,81,House
+Schweikert,David,AZ,01,Republican,1962,Gen X (13ers),2011,16,False,64,67,House
+Scott,Austin,GA,08,Republican,1969,Gen X (13ers),2011,16,False,57,60,House
+Sewell,Terri,AL,07,Democrat,1965,Gen X (13ers),2011,16,False,61,64,House
+Webster,Daniel,FL,11,Republican,1949,Baby Boom Generation,2011,16,False,77,80,House
+Wilson,Frederica,FL,24,Democrat,1942,Silent Generation,2011,16,False,84,87,House
+Womack,Steve,AR,03,Republican,1957,Baby Boom Generation,2011,16,False,69,72,House
+Amodei,Mark,NV,02,Republican,1958,Baby Boom Generation,2011,16,False,68,71,House
+Bonamici,Suzanne,OR,01,Democrat,1954,Baby Boom Generation,2012,15,False,72,75,House
+DelBene,Suzan,WA,01,Democrat,1962,Gen X (13ers),2012,15,False,64,67,House
+Massie,Thomas,KY,04,Republican,1971,Gen X (13ers),2012,15,False,55,58,House
+Huffman,Jared,CA,02,Democrat,1964,Gen X (13ers),2013,14,False,62,65,House
+Bera,Ami,CA,06,Democrat,1965,Gen X (13ers),2013,14,False,61,64,House
+Swalwell,Eric,CA,14,Democrat,1980,Gen X (13ers),2013,14,False,46,49,House
+Brownley,Julia,CA,26,Democrat,1952,Baby Boom Generation,2013,14,False,74,77,House
+Ruiz,Raul,CA,25,Democrat,1972,Gen X (13ers),2013,14,False,54,57,House
+Takano,Mark,CA,39,Democrat,1960,Baby Boom Generation,2013,14,False,66,69,House
+Vargas,Juan,CA,52,Democrat,1961,Gen X (13ers),2013,14,False,65,68,House
+Peters,Scott,CA,50,Democrat,1958,Baby Boom Generation,2013,14,False,68,71,House
+Frankel,Lois,FL,22,Democrat,1948,Baby Boom Generation,2013,14,False,78,81,House
+Barr,Garland,KY,06,Republican,1973,Gen X (13ers),2013,14,False,53,56,House
+Wagner,Ann,MO,02,Republican,1962,Gen X (13ers),2013,14,False,64,67,House
+Hudson,Richard,NC,09,Republican,1971,Gen X (13ers),2013,14,False,55,58,House
+Meng,Grace,NY,06,Democrat,1975,Gen X (13ers),2013,14,False,51,54,House
+Jeffries,Hakeem,NY,08,Democrat,1970,Gen X (13ers),2013,14,False,56,59,House
+Beatty,Joyce,OH,03,Democrat,1950,Baby Boom Generation,2013,14,False,76,79,House
+Joyce,David,OH,14,Republican,1957,Baby Boom Generation,2013,14,False,69,72,House
+Perry,Scott,PA,10,Republican,1962,Gen X (13ers),2013,14,False,64,67,House
+Weber,Randy,TX,14,Republican,1953,Baby Boom Generation,2013,14,False,73,76,House
+Castro,Joaquin,TX,20,Democrat,1974,Gen X (13ers),2013,14,False,52,55,House
+Williams,Roger,TX,25,Republican,1949,Baby Boom Generation,2013,14,False,77,80,House
+Veasey,Marc,TX,33,Democrat,1971,Gen X (13ers),2013,14,False,55,58,House
+Pocan,Mark,WI,02,Democrat,1964,Gen X (13ers),2013,14,False,62,65,House
+Kelly,Robin,IL,02,Democrat,1956,Baby Boom Generation,2013,14,False,70,73,House
+Smith,Jason,MO,08,Republican,1980,Gen X (13ers),2013,14,False,46,49,House
+Clark,Katherine,MA,05,Democrat,1963,Gen X (13ers),2013,14,False,63,66,House
+Schneider,Bradley,IL,10,Democrat,1961,Gen X (13ers),2013,14,False,65,68,House
+Horsford,Steven,NV,04,Democrat,1973,Gen X (13ers),2013,14,False,53,56,House
+Valadao,David,CA,22,Republican,1977,Gen X (13ers),2013,14,False,49,52,House
+Norcross,Donald,NJ,01,Democrat,1958,Baby Boom Generation,2014,13,False,68,71,House
+Adams,Alma,NC,12,Democrat,1946,Baby Boom Generation,2014,13,False,80,83,House
+Palmer,Gary,AL,06,Republican,1954,Baby Boom Generation,2015,12,False,72,75,House
+Hill,J.,AR,02,Republican,1956,Baby Boom Generation,2015,12,False,70,73,House
+Westerman,Bruce,AR,04,Republican,1967,Gen X (13ers),2015,12,False,59,62,House
+DeSaulnier,Mark,CA,10,Democrat,1952,Baby Boom Generation,2015,12,False,74,77,House
+Aguilar,Pete,CA,33,Democrat,1979,Gen X (13ers),2015,12,False,47,50,House
+Lieu,Ted,CA,36,Democrat,1969,Gen X (13ers),2015,12,False,57,60,House
+Torres,Norma,CA,35,Democrat,1965,Gen X (13ers),2015,12,False,61,64,House
+Carter,Earl,GA,01,Republican,1957,Baby Boom Generation,2015,12,False,69,72,House
+Loudermilk,Barry,GA,11,Republican,1963,Gen X (13ers),2015,12,False,63,66,House
+Allen,Rick,GA,12,Republican,1951,Baby Boom Generation,2015,12,False,75,78,House
+Bost,Mike,IL,12,Republican,1960,Baby Boom Generation,2015,12,False,66,69,House
+Moulton,Seth,MA,06,Democrat,1978,Gen X (13ers),2015,12,False,48,51,House
+Moolenaar,John,MI,02,Republican,1961,Gen X (13ers),2015,12,False,65,68,House
+Dingell,Debbie,MI,06,Democrat,1953,Baby Boom Generation,2015,12,False,73,76,House
+Emmer,Tom,MN,06,Republican,1961,Gen X (13ers),2015,12,False,65,68,House
+Rouzer,David,NC,07,Republican,1972,Gen X (13ers),2015,12,False,54,57,House
+Watson Coleman,Bonnie,NJ,12,Democrat,1945,Baby Boom Generation,2015,12,False,81,84,House
+Stefanik,Elise,NY,21,Republican,1984,Millennial Generation,2015,12,False,42,45,House
+Boyle,Brendan,PA,02,Democrat,1977,Gen X (13ers),2015,12,False,49,52,House
+Babin,Brian,TX,36,Republican,1948,Baby Boom Generation,2015,12,False,78,81,House
+Beyer,Donald,VA,08,Democrat,1950,Baby Boom Generation,2015,12,False,76,79,House
+Plaskett,Stacey,VI,00,Democrat,1966,Gen X (13ers),2015,12,False,60,63,House
+Newhouse,Dan,WA,04,Republican,1955,Baby Boom Generation,2015,12,False,71,74,House
+Grothman,Glenn,WI,06,Republican,1955,Baby Boom Generation,2015,12,False,71,74,House
+Radewagen,Aumua Amata,AS,00,Republican,1947,Baby Boom Generation,2015,12,False,79,82,House
+Kelly,Trent,MS,01,Republican,1966,Gen X (13ers),2015,12,False,60,63,House
+LaHood,Darin,IL,16,Republican,1968,Gen X (13ers),2015,12,False,58,61,House
+Zinke,Ryan,MT,01,Republican,1961,Gen X (13ers),2015,12,False,65,68,House
+Davidson,Warren,OH,08,Republican,1970,Gen X (13ers),2016,11,False,56,59,House
+Comer,James,KY,01,Republican,1972,Gen X (13ers),2016,11,False,54,57,House
+Evans,Dwight,PA,03,Democrat,1954,Baby Boom Generation,2016,11,False,72,75,House
+Biggs,Andy,AZ,05,Republican,1958,Baby Boom Generation,2017,10,False,68,71,House
+Khanna,Ro,CA,17,Democrat,1976,Gen X (13ers),2017,10,False,50,53,House
+Panetta,Jimmy,CA,19,Democrat,1969,Gen X (13ers),2017,10,False,57,60,House
+Carbajal,Salud,CA,24,Democrat,1964,Gen X (13ers),2017,10,False,62,65,House
+Barragán,Nanette,CA,44,Democrat,1976,Gen X (13ers),2017,10,False,50,53,House
+Correa,J.,CA,46,Democrat,1958,Baby Boom Generation,2017,10,False,68,71,House
+Dunn,Neal,FL,02,Republican,1953,Baby Boom Generation,2017,10,False,73,76,House
+Rutherford,John,FL,05,Republican,1952,Baby Boom Generation,2017,10,False,74,77,House
+Soto,Darren,FL,09,Democrat,1978,Gen X (13ers),2017,10,False,48,51,House
+Mast,Brian,FL,21,Republican,1980,Gen X (13ers),2017,10,False,46,49,House
+Krishnamoorthi,Raja,IL,08,Democrat,1973,Gen X (13ers),2017,10,False,53,56,House
+Higgins,Clay,LA,03,Republican,1961,Gen X (13ers),2017,10,False,65,68,House
+Johnson,Mike,LA,04,Republican,1972,Gen X (13ers),2017,10,False,54,57,House
+Raskin,Jamie,MD,08,Democrat,1962,Gen X (13ers),2017,10,False,64,67,House
+Bergman,Jack,MI,01,Republican,1947,Baby Boom Generation,2017,10,False,79,82,House
+Bacon,Don,NE,02,Republican,1963,Gen X (13ers),2017,10,False,63,66,House
+Gottheimer,Josh,NJ,05,Democrat,1975,Gen X (13ers),2017,10,False,51,54,House
+Espaillat,Adriano,NY,13,Democrat,1954,Baby Boom Generation,2017,10,False,72,75,House
+Fitzpatrick,Brian,PA,01,Republican,1973,Gen X (13ers),2017,10,False,53,56,House
+Smucker,Lloyd,PA,11,Republican,1964,Gen X (13ers),2017,10,False,62,65,House
+Kustoff,David,TN,08,Republican,1966,Gen X (13ers),2017,10,False,60,63,House
+Gonzalez,Vicente,TX,34,Democrat,1967,Gen X (13ers),2017,10,False,59,62,House
+Arrington,Jodey,TX,19,Republican,1972,Gen X (13ers),2017,10,False,54,57,House
+Jayapal,Pramila,WA,07,Democrat,1965,Gen X (13ers),2017,10,False,61,64,House
+Estes,Ron,KS,04,Republican,1956,Baby Boom Generation,2017,10,False,70,73,House
+Norman,Ralph,SC,05,Republican,1953,Baby Boom Generation,2017,10,False,73,76,House
+Gomez,Jimmy,CA,34,Democrat,1974,Gen X (13ers),2017,10,False,52,55,House
+Tenney,Claudia,NY,24,Republican,1961,Gen X (13ers),2017,10,False,65,68,House
+Suozzi,Thomas,NY,03,Democrat,1962,Gen X (13ers),2017,10,False,64,67,House
+Cloud,Michael,TX,27,Republican,1975,Gen X (13ers),2018,9,False,51,54,House
+Balderson,Troy,OH,12,Republican,1962,Gen X (13ers),2018,9,False,64,67,House
+Hern,Kevin,OK,01,Republican,1961,Gen X (13ers),2018,9,False,65,68,House
+Morelle,Joseph,NY,25,Democrat,1957,Baby Boom Generation,2018,9,False,69,72,House
+Scanlon,Mary,PA,05,Democrat,1959,Baby Boom Generation,2018,9,False,67,70,House
+Stanton,Greg,AZ,04,Democrat,1970,Gen X (13ers),2019,8,False,56,59,House
+Harder,Josh,CA,09,Democrat,1986,Millennial Generation,2019,8,False,40,43,House
+Levin,Mike,CA,49,Democrat,1978,Gen X (13ers),2019,8,False,48,51,House
+Neguse,Joe,CO,02,Democrat,1984,Millennial Generation,2019,8,False,42,45,House
+Crow,Jason,CO,06,Democrat,1979,Gen X (13ers),2019,8,False,47,50,House
+Hayes,Jahana,CT,05,Democrat,1973,Gen X (13ers),2019,8,False,53,56,House
+Steube,W.,FL,17,Republican,1978,Gen X (13ers),2019,8,False,48,51,House
+McBath,Lucy,GA,06,Democrat,1960,Baby Boom Generation,2019,8,False,66,69,House
+Fulcher,Russ,ID,01,Republican,1973,Gen X (13ers),2019,8,False,53,56,House
+García,Jesús,IL,04,Democrat,1956,Baby Boom Generation,2019,8,False,70,73,House
+Casten,Sean,IL,06,Democrat,1971,Gen X (13ers),2019,8,False,55,58,House
+Underwood,Lauren,IL,14,Democrat,1986,Millennial Generation,2019,8,False,40,43,House
+Baird,James,IN,04,Republican,1945,Baby Boom Generation,2019,8,False,81,84,House
+Davids,Sharice,KS,03,Democrat,1980,Gen X (13ers),2019,8,False,46,49,House
+Trahan,Lori,MA,03,Democrat,1973,Gen X (13ers),2019,8,False,53,56,House
+Pressley,Ayanna,MA,07,Democrat,1974,Gen X (13ers),2019,8,False,52,55,House
+Stevens,Haley,MI,11,Democrat,1983,Millennial Generation,2019,8,False,43,46,House
+Tlaib,Rashida,MI,12,Democrat,1976,Gen X (13ers),2019,8,False,50,53,House
+Craig,Angie,MN,02,Democrat,1972,Gen X (13ers),2019,8,False,54,57,House
+Omar,Ilhan,MN,05,Democrat,1981,Gen X (13ers),2019,8,False,45,48,House
+Stauber,Pete,MN,08,Republican,1966,Gen X (13ers),2019,8,False,60,63,House
+Guest,Michael,MS,03,Republican,1970,Gen X (13ers),2019,8,False,56,59,House
+Pappas,Chris,NH,01,Democrat,1980,Gen X (13ers),2019,8,False,46,49,House
+Van Drew,Jefferson,NJ,02,Republican,1953,Baby Boom Generation,2019,8,False,73,76,House
+Lee,Susie,NV,03,Democrat,1966,Gen X (13ers),2019,8,False,60,63,House
+Ocasio-Cortez,Alexandria,NY,14,Democrat,1989,Millennial Generation,2019,8,False,37,40,House
+Dean,Madeleine,PA,04,Democrat,1959,Baby Boom Generation,2019,8,False,67,70,House
+Houlahan,Chrissy,PA,06,Democrat,1967,Gen X (13ers),2019,8,False,59,62,House
+Meuser,Daniel,PA,09,Republican,1964,Gen X (13ers),2019,8,False,62,65,House
+Joyce,John,PA,13,Republican,1957,Baby Boom Generation,2019,8,False,69,72,House
+Reschenthaler,Guy,PA,14,Republican,1983,Millennial Generation,2019,8,False,43,46,House
+Timmons,William,SC,04,Republican,1984,Millennial Generation,2019,8,False,42,45,House
+Johnson,Dusty,SD,00,Republican,1976,Gen X (13ers),2019,8,False,50,53,House
+Burchett,Tim,TN,02,Republican,1964,Gen X (13ers),2019,8,False,62,65,House
+Rose,John,TN,06,Republican,1965,Gen X (13ers),2019,8,False,61,64,House
+Crenshaw,Dan,TX,02,Republican,1984,Millennial Generation,2019,8,False,42,45,House
+Gooden,Lance,TX,05,Republican,1982,Millennial Generation,2019,8,False,44,47,House
+Fletcher,Lizzie,TX,07,Democrat,1975,Gen X (13ers),2019,8,False,51,54,House
+Escobar,Veronica,TX,16,Democrat,1969,Gen X (13ers),2019,8,False,57,60,House
+Roy,Chip,TX,21,Republican,1972,Gen X (13ers),2019,8,False,54,57,House
+Garcia,Sylvia,TX,29,Democrat,1950,Baby Boom Generation,2019,8,False,76,79,House
+Cline,Ben,VA,06,Republican,1972,Gen X (13ers),2019,8,False,54,57,House
+Schrier,Kim,WA,08,Democrat,1968,Gen X (13ers),2019,8,False,58,61,House
+Steil,Bryan,WI,01,Republican,1981,Gen X (13ers),2019,8,False,45,48,House
+Miller,Carol,WV,01,Republican,1950,Baby Boom Generation,2019,8,False,76,79,House
+Golden,Jared,ME,02,Democrat,1982,Millennial Generation,2019,8,False,44,47,House
+Murphy,Gregory,NC,03,Republican,1963,Gen X (13ers),2019,8,False,63,66,House
+Cisneros,Gilbert,CA,31,Democrat,1971,Gen X (13ers),2019,8,False,55,58,House
+Tiffany,Thomas,WI,07,Republican,1957,Baby Boom Generation,2020,7,False,69,72,House
+Moore,Barry,AL,01,Republican,1966,Gen X (13ers),2021,6,False,60,63,House
+Obernolte,Jay,CA,23,Republican,1970,Gen X (13ers),2021,6,False,56,59,House
+Kim,Young,CA,40,Republican,1962,Gen X (13ers),2021,6,False,64,67,House
+Jacobs,Sara,CA,51,Democrat,1989,Millennial Generation,2021,6,False,37,40,House
+Boebert,Lauren,CO,04,Republican,1986,Millennial Generation,2021,6,False,40,43,House
+Cammack,Katherine,FL,03,Republican,1988,Millennial Generation,2021,6,False,38,41,House
+Franklin,C.,FL,18,Republican,1964,Gen X (13ers),2021,6,False,62,65,House
+Donalds,Byron,FL,19,Republican,1978,Gen X (13ers),2021,6,False,48,51,House
+Gimenez,Carlos,FL,28,Republican,1954,Baby Boom Generation,2021,6,False,72,75,House
+Salazar,Maria,FL,27,Republican,1961,Gen X (13ers),2021,6,False,65,68,House
+Williams,Nikema,GA,05,Democrat,1978,Gen X (13ers),2021,6,False,48,51,House
+Clyde,Andrew,GA,09,Republican,1963,Gen X (13ers),2021,6,False,63,66,House
+Hinson,Ashley,IA,02,Republican,1983,Millennial Generation,2021,6,False,43,46,House
+Miller-Meeks,Mariannette,IA,01,Republican,1955,Baby Boom Generation,2021,6,False,71,74,House
+Feenstra,Randy,IA,04,Republican,1969,Gen X (13ers),2021,6,False,57,60,House
+Miller,Mary,IL,15,Republican,1959,Baby Boom Generation,2021,6,False,67,70,House
+Mrvan,Frank,IN,01,Democrat,1969,Gen X (13ers),2021,6,False,57,60,House
+Spartz,Victoria,IN,05,Republican,1978,Gen X (13ers),2021,6,False,48,51,House
+Mann,Tracey,KS,01,Republican,1976,Gen X (13ers),2021,6,False,50,53,House
+Auchincloss,Jake,MA,04,Democrat,1988,Millennial Generation,2021,6,False,38,41,House
+McClain,Lisa,MI,09,Republican,1966,Gen X (13ers),2021,6,False,60,63,House
+Fischbach,Michelle,MN,07,Republican,1965,Gen X (13ers),2021,6,False,61,64,House
+Ross,Deborah,NC,02,Democrat,1963,Gen X (13ers),2021,6,False,63,66,House
+Leger Fernandez,Teresa,NM,03,Democrat,1959,Baby Boom Generation,2021,6,False,67,70,House
+Garbarino,Andrew,NY,02,Republican,1984,Millennial Generation,2021,6,False,42,45,House
+Malliotakis,Nicole,NY,11,Republican,1980,Gen X (13ers),2021,6,False,46,49,House
+Torres,Ritchie,NY,15,Democrat,1988,Millennial Generation,2021,6,False,38,41,House
+Bice,Stephanie,OK,05,Republican,1973,Gen X (13ers),2021,6,False,53,56,House
+Bentz,Cliff,OR,02,Republican,1952,Baby Boom Generation,2021,6,False,74,77,House
+Mace,Nancy,SC,01,Republican,1977,Gen X (13ers),2021,6,False,49,52,House
+Harshbarger,Diana,TN,01,Republican,1960,Baby Boom Generation,2021,6,False,66,69,House
+Fallon,Patrick,TX,04,Republican,1967,Gen X (13ers),2021,6,False,59,62,House
+Pfluger,August,TX,11,Republican,1978,Gen X (13ers),2021,6,False,48,51,House
+Jackson,Ronny,TX,13,Republican,1967,Gen X (13ers),2021,6,False,59,62,House
+Nehls,Troy,TX,22,Republican,1968,Gen X (13ers),2021,6,False,58,61,House
+Gonzales,Ernest,TX,23,Republican,1980,Gen X (13ers),2021,6,False,46,49,House
+Van Duyne,Beth,TX,24,Republican,1970,Gen X (13ers),2021,6,False,56,59,House
+Moore,Blake,UT,01,Republican,1980,Gen X (13ers),2021,6,False,46,49,House
+Owens,Clarence,UT,04,Republican,1951,Baby Boom Generation,2021,6,False,75,78,House
+Strickland,Marilyn,WA,10,Democrat,1962,Gen X (13ers),2021,6,False,64,67,House
+Fitzgerald,Scott,WI,05,Republican,1963,Gen X (13ers),2021,6,False,63,66,House
+Letlow,Julia,LA,05,Republican,1981,Gen X (13ers),2021,6,False,45,48,House
+Carter,Troy,LA,02,Democrat,1963,Gen X (13ers),2021,6,False,63,66,House
+Stansbury,Melanie,NM,01,Democrat,1979,Gen X (13ers),2021,6,False,47,50,House
+Ellzey,Jake,TX,06,Republican,1970,Gen X (13ers),2021,6,False,56,59,House
+Brown,Shontel,OH,11,Democrat,1975,Gen X (13ers),2021,6,False,51,54,House
+Carey,Mike,OH,15,Republican,1971,Gen X (13ers),2021,6,False,55,58,House
+Cherfilus-McCormick,Sheila,FL,20,Democrat,1979,Gen X (13ers),2022,5,False,47,50,House
+Flood,Mike,NE,01,Republican,1975,Gen X (13ers),2022,5,False,51,54,House
+Finstad,Brad,MN,01,Republican,1976,Gen X (13ers),2022,5,False,50,53,House
+Ryan,Patrick,NY,18,Democrat,1982,Millennial Generation,2022,5,False,44,47,House
+Yakym,Rudy,IN,02,Republican,1984,Millennial Generation,2022,5,False,42,45,House
+Strong,Dale,AL,05,Republican,1970,Gen X (13ers),2023,4,False,56,59,House
+Crane,Eli,AZ,02,Republican,1980,Gen X (13ers),2023,4,False,46,49,House
+Ciscomani,Juan,AZ,06,Republican,1982,Millennial Generation,2023,4,False,44,47,House
+Kiley,Kevin,CA,03,Republican,1985,Millennial Generation,2023,4,False,41,44,House
+Mullin,Kevin,CA,15,Democrat,1970,Gen X (13ers),2023,4,False,56,59,House
+Kamlager-Dove,Sydney,CA,37,Democrat,1972,Gen X (13ers),2023,4,False,54,57,House
+Garcia,Robert,CA,42,Democrat,1977,Gen X (13ers),2023,4,False,49,52,House
+Pettersen,Brittany,CO,07,Democrat,1981,Gen X (13ers),2023,4,False,45,48,House
+Bean,Aaron,FL,04,Republican,1967,Gen X (13ers),2023,4,False,59,62,House
+Mills,Cory,FL,07,Republican,1980,Gen X (13ers),2023,4,False,46,49,House
+Frost,Maxwell,FL,10,Democrat,1997,Millennial Generation,2023,4,False,29,32,House
+Luna,Anna,FL,13,Republican,1989,Millennial Generation,2023,4,False,37,40,House
+Lee,Laurel,FL,15,Republican,1974,Gen X (13ers),2023,4,False,52,55,House
+Moskowitz,Jared,FL,23,Democrat,1980,Gen X (13ers),2023,4,False,46,49,House
+McCormick,Rich,GA,07,Republican,1968,Gen X (13ers),2023,4,False,58,61,House
+Collins,Mike,GA,10,Republican,1967,Gen X (13ers),2023,4,False,59,62,House
+Moylan,James (Jim),GU,00,Republican,1962,Gen X (13ers),2023,4,False,64,67,House
+Tokuda,Jill,HI,02,Democrat,1976,Gen X (13ers),2023,4,False,50,53,House
+Nunn,Zachary (Zach),IA,03,Republican,1979,Gen X (13ers),2023,4,False,47,50,House
+Jackson,Jonathan,IL,01,Democrat,1966,Gen X (13ers),2023,4,False,60,63,House
+Ramirez,Delia,IL,03,Democrat,1983,Millennial Generation,2023,4,False,43,46,House
+Budzinski,Nicole (Nikki),IL,13,Democrat,1977,Gen X (13ers),2023,4,False,49,52,House
+Sorensen,Eric,IL,17,Democrat,1976,Gen X (13ers),2023,4,False,50,53,House
+Houchin,Erin,IN,09,Republican,1976,Gen X (13ers),2023,4,False,50,53,House
+McGarvey,Morgan,KY,03,Democrat,1979,Gen X (13ers),2023,4,False,47,50,House
+Ivey,Glenn,MD,04,Democrat,1961,Gen X (13ers),2023,4,False,65,68,House
+Scholten,Hillary,MI,03,Democrat,1982,Millennial Generation,2023,4,False,44,47,House
+James,John,MI,10,Republican,1981,Gen X (13ers),2023,4,False,45,48,House
+Thanedar,Shri,MI,13,Democrat,1955,Baby Boom Generation,2023,4,False,71,74,House
+Alford,Mark,MO,04,Republican,1963,Gen X (13ers),2023,4,False,63,66,House
+Burlison,Eric,MO,07,Republican,1976,Gen X (13ers),2023,4,False,50,53,House
+Ezell,Mike,MS,04,Republican,1959,Baby Boom Generation,2023,4,False,67,70,House
+Davis,Donald,NC,01,Democrat,1971,Gen X (13ers),2023,4,False,55,58,House
+Foushee,Valerie,NC,04,Democrat,1956,Baby Boom Generation,2023,4,False,70,73,House
+Edwards,Charles (Chuck),NC,11,Republican,1960,Baby Boom Generation,2023,4,False,66,69,House
+Kean,Thomas,NJ,07,Republican,1968,Gen X (13ers),2023,4,False,58,61,House
+Menendez,Robert,NJ,08,Democrat,1985,Millennial Generation,2023,4,False,41,44,House
+Vasquez,Gabriel (Gabe),NM,02,Democrat,1984,Millennial Generation,2023,4,False,42,45,House
+LaLota,Nicolas,NY,01,Republican,1978,Gen X (13ers),2023,4,False,48,51,House
+Goldman,Dan,NY,10,Democrat,1976,Gen X (13ers),2023,4,False,50,53,House
+Lawler,Michael,NY,17,Republican,1986,Millennial Generation,2023,4,False,40,43,House
+Langworthy,Nicholas,NY,23,Republican,1981,Gen X (13ers),2023,4,False,45,48,House
+Landsman,Greg,OH,01,Democrat,1976,Gen X (13ers),2023,4,False,50,53,House
+Miller,Max,OH,07,Republican,1988,Millennial Generation,2023,4,False,38,41,House
+Sykes,Emilia,OH,13,Democrat,1986,Millennial Generation,2023,4,False,40,43,House
+Brecheen,Josh,OK,02,Republican,1979,Gen X (13ers),2023,4,False,47,50,House
+Hoyle,Valerie,OR,04,Democrat,1964,Gen X (13ers),2023,4,False,62,65,House
+Salinas,Andrea,OR,06,Democrat,1969,Gen X (13ers),2023,4,False,57,60,House
+Lee,Summer,PA,12,Democrat,1987,Millennial Generation,2023,4,False,39,42,House
+Deluzio,Chris,PA,17,Democrat,1984,Millennial Generation,2023,4,False,42,45,House
+Magaziner,Seth,RI,02,Democrat,1983,Millennial Generation,2023,4,False,43,46,House
+Fry,Russell,SC,07,Republican,1985,Millennial Generation,2023,4,False,41,44,House
+Ogles,Andrew,TN,05,Republican,1971,Gen X (13ers),2023,4,False,55,58,House
+Moran,Nathaniel,TX,01,Republican,1974,Gen X (13ers),2023,4,False,52,55,House
+Self,Keith,TX,03,Republican,1953,Baby Boom Generation,2023,4,False,73,76,House
+Luttrell,Morgan,TX,08,Republican,1975,Gen X (13ers),2023,4,False,51,54,House
+De La Cruz,Mónica,TX,15,Republican,1974,Gen X (13ers),2023,4,False,52,55,House
+Crockett,Jasmine,TX,30,Democrat,1981,Gen X (13ers),2023,4,False,45,48,House
+Casar,Gregorio,TX,35,Democrat,1989,Millennial Generation,2023,4,False,37,40,House
+Hunt,Wesley,TX,38,Republican,1981,Gen X (13ers),2023,4,False,45,48,House
+Kiggans,Jennifer,VA,02,Republican,1971,Gen X (13ers),2023,4,False,55,58,House
+Balint,Becca,VT,00,Democrat,1968,Gen X (13ers),2023,4,False,58,61,House
+Gluesenkamp Perez,Marie,WA,03,Democrat,1988,Millennial Generation,2023,4,False,38,41,House
+Van Orden,Derrick,WI,03,Republican,1969,Gen X (13ers),2023,4,False,57,60,House
+Hageman,Harriet,WY,00,Republican,1962,Gen X (13ers),2023,4,False,64,67,House
+McClellan,Jennifer,VA,04,Democrat,1972,Gen X (13ers),2023,4,False,54,57,House
+Amo,Gabe,RI,01,Democrat,1987,Millennial Generation,2023,4,False,39,42,House
+Maloy,Celeste,UT,02,Republican,1981,Gen X (13ers),2023,4,False,45,48,House
+Kennedy,Timothy,NY,26,Democrat,1976,Gen X (13ers),2024,3,False,50,53,House
+Fong,Vince,CA,20,Republican,1979,Gen X (13ers),2024,3,False,47,50,House
+Rulli,Michael,OH,06,Republican,1969,Gen X (13ers),2024,3,False,57,60,House
+McIver,LaMonica,NJ,10,Democrat,1986,Millennial Generation,2024,3,False,40,43,House
+Wied,Tony,WI,08,Republican,1976,Gen X (13ers),2024,3,False,50,53,House
+Begich,Nicholas,AK,00,Republican,1977,Gen X (13ers),2025,2,False,49,52,House
+Figures,Shomari,AL,02,Democrat,1985,Millennial Generation,2025,2,False,41,44,House
+Ansari,Yassamin,AZ,03,Democrat,1992,Millennial Generation,2025,2,False,34,37,House
+Hamadeh,Abraham,AZ,08,Republican,1991,Millennial Generation,2025,2,False,35,38,House
+Simon,Lateefah,CA,12,Democrat,1977,Gen X (13ers),2025,2,False,49,52,House
+Gray,Adam,CA,13,Democrat,1977,Gen X (13ers),2025,2,False,49,52,House
+Liccardo,Sam,CA,16,Democrat,1970,Gen X (13ers),2025,2,False,56,59,House
+Whitesides,George,CA,27,Democrat,1974,Gen X (13ers),2025,2,False,52,55,House
+Rivas,Luz,CA,29,Democrat,1974,Gen X (13ers),2025,2,False,52,55,House
+Friedman,Laura,CA,30,Democrat,1966,Gen X (13ers),2025,2,False,60,63,House
+Tran,Derek,CA,45,Democrat,1980,Gen X (13ers),2025,2,False,46,49,House
+Min,Dave,CA,47,Democrat,1976,Gen X (13ers),2025,2,False,50,53,House
+Hurd,Jeff,CO,03,Republican,1979,Gen X (13ers),2025,2,False,47,50,House
+Crank,Jeff,CO,05,Republican,1967,Gen X (13ers),2025,2,False,59,62,House
+Evans,Gabe,CO,08,Republican,1986,Millennial Generation,2025,2,False,40,43,House
+McBride,Sarah,DE,00,Democrat,1990,Millennial Generation,2025,2,False,36,39,House
+Haridopolos,Mike,FL,08,Republican,1970,Gen X (13ers),2025,2,False,56,59,House
+Jack,Brian,GA,03,Republican,1988,Millennial Generation,2025,2,False,38,41,House
+Shreve,Jefferson,IN,06,Republican,1965,Gen X (13ers),2025,2,False,61,64,House
+Messmer,Mark,IN,08,Republican,1967,Gen X (13ers),2025,2,False,59,62,House
+Schmidt,Derek,KS,02,Republican,1968,Gen X (13ers),2025,2,False,58,61,House
+Olszewski,Johnny,MD,02,Democrat,1982,Millennial Generation,2025,2,False,44,47,House
+Elfreth,Sarah,MD,03,Democrat,1988,Millennial Generation,2025,2,False,38,41,House
+McClain Delaney,April,MD,06,Democrat,1964,Gen X (13ers),2025,2,False,62,65,House
+Barrett,Tom,MI,07,Republican,1981,Gen X (13ers),2025,2,False,45,48,House
+McDonald Rivet,Kristen,MI,08,Democrat,1970,Gen X (13ers),2025,2,False,56,59,House
+Morrison,Kelly,MN,03,Democrat,1969,Gen X (13ers),2025,2,False,57,60,House
+Bell,Wesley,MO,01,Democrat,1974,Gen X (13ers),2025,2,False,52,55,House
+Onder,Robert,MO,03,Republican,1962,Gen X (13ers),2025,2,False,64,67,House
+King-Hinds,Kimberlyn,MP,00,Republican,1975,Gen X (13ers),2025,2,False,51,54,House
+Downing,Troy,MT,02,Republican,1967,Gen X (13ers),2025,2,False,59,62,House
+McDowell,Addison,NC,06,Republican,1994,Millennial Generation,2025,2,False,32,35,House
+Harris,Mark,NC,08,Republican,1966,Gen X (13ers),2025,2,False,60,63,House
+Harrigan,Pat,NC,10,Republican,1987,Millennial Generation,2025,2,False,39,42,House
+Knott,Brad,NC,13,Republican,1986,Millennial Generation,2025,2,False,40,43,House
+Moore,Tim,NC,14,Republican,1970,Gen X (13ers),2025,2,False,56,59,House
+Fedorchak,Julie,ND,00,Republican,1968,Gen X (13ers),2025,2,False,58,61,House
+Goodlander,Maggie,NH,02,Democrat,1986,Millennial Generation,2025,2,False,40,43,House
+Conaway,Herbert,NJ,03,Democrat,1963,Gen X (13ers),2025,2,False,63,66,House
+Pou,Nellie,NJ,09,Democrat,1956,Baby Boom Generation,2025,2,False,70,73,House
+Gillen,Laura,NY,04,Democrat,1969,Gen X (13ers),2025,2,False,57,60,House
+Latimer,George,NY,16,Democrat,1953,Baby Boom Generation,2025,2,False,73,76,House
+Riley,Josh,NY,19,Democrat,1981,Gen X (13ers),2025,2,False,45,48,House
+Mannion,John,NY,22,Democrat,1968,Gen X (13ers),2025,2,False,58,61,House
+Taylor,David,OH,02,Republican,1969,Gen X (13ers),2025,2,False,57,60,House
+Dexter,Maxine,OR,03,Democrat,1972,Gen X (13ers),2025,2,False,54,57,House
+Bynum,Janelle,OR,05,Democrat,1975,Gen X (13ers),2025,2,False,51,54,House
+Mackenzie,Ryan,PA,07,Republican,1982,Millennial Generation,2025,2,False,44,47,House
+Bresnahan,Robert,PA,08,Republican,1990,Millennial Generation,2025,2,False,36,39,House
+Hernández Rivera,Pablo José,PR,00,Democrat,1991,Millennial Generation,2025,2,False,35,38,House
+Biggs,Sheri,SC,03,Republican,1970,Gen X (13ers),2025,2,False,56,59,House
+Goldman,Craig,TX,12,Republican,1968,Gen X (13ers),2025,2,False,58,61,House
+Gill,Brandon,TX,26,Republican,1994,Millennial Generation,2025,2,False,32,35,House
+Johnson,Julie,TX,32,Democrat,1966,Gen X (13ers),2025,2,False,60,63,House
+Kennedy,Mike,UT,03,Republican,1969,Gen X (13ers),2025,2,False,57,60,House
+McGuire,John,VA,05,Republican,1968,Gen X (13ers),2025,2,False,58,61,House
+Vindman,Eugene,VA,07,Democrat,1975,Gen X (13ers),2025,2,False,51,54,House
+Subramanyam,Suhas,VA,10,Democrat,1986,Millennial Generation,2025,2,False,40,43,House
+Baumgartner,Michael,WA,05,Republican,1975,Gen X (13ers),2025,2,False,51,54,House
+Randall,Emily,WA,06,Democrat,1985,Millennial Generation,2025,2,False,41,44,House
+Moore,Riley,WV,02,Republican,1980,Gen X (13ers),2025,2,False,46,49,House
+Patronis,Jimmy,FL,01,Republican,1972,Gen X (13ers),2025,2,False,54,57,House
+Fine,Randall,FL,06,Republican,1974,Gen X (13ers),2025,2,False,52,55,House
+Walkinshaw,James,VA,11,Democrat,1982,Millennial Generation,2025,2,False,44,47,House
+Grijalva,Adelita,AZ,07,Democrat,1970,Gen X (13ers),2025,2,False,56,59,House
+Van Epps,Matt,TN,07,Republican,1983,Millennial Generation,2025,2,False,43,46,House
+Menefee,Christian,TX,18,Democrat,1988,Millennial Generation,2026,1,False,38,41,House
