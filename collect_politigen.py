@@ -748,19 +748,37 @@ print("=" * 60)
 HOUSE_WALL_CAP = 65   # max bars shown in the House Calcification Wall chart
 
 # ── Hardcoded House retirement list ──────────────────────────────────────────
-# (state, district_zero_padded) tuples for confirmed non-seekers.
-# Includes: retiring from public office, running for Senate, running for governor,
-# running for attorney general, or otherwise vacating their seat.
+# (state, district_zero_padded) tuples for members retiring from public office.
+# Members running for Senate, governor, or other offices are NOT listed here —
+# they are still on the 2026 ballot, just for a different seat.
 #
 # Last validated against Ballotpedia: 2026-03-03
 # Source: https://ballotpedia.org/United_States_House_of_Representatives_elections,_2026
-#   "Incumbents retiring from public office"  (15 members)
-#   "Representatives running for a U.S. Senate seat"  (13 members)
-#   "Representatives running for governor"  (12 members)
-#   "Representatives running for attorney general"  (1 member)
-# Total confirmed departures as of 2026-03-03: ~41 members
+#   (see "Incumbents retiring from public office" table — 24 members as of 2026-03-03)
+#
+# To add a new retirement: append the (state, district) tuple with a dated comment.
+# Total confirmed public-office retirees as of 2026-03-03: 15
+# NOTE: Members running for Senate, governor, or other offices are NOT listed
+# here — they are still on the 2026 ballot, just for a different seat.
+# Only members leaving elected office entirely are marked as non-seekers.
+#
+# To add a new retirement: append the (state, district) tuple with a comment.
+# To verify the list is complete, check:
+#   https://ballotpedia.org/United_States_House_of_Representatives_elections,_2026
+#   (see "Incumbents retiring from public office" table)
 RETIRING_DISTRICTS = {
-    # ── Retiring from public office ──────────────────────────────────────────
+    # 24 members confirmed retiring from public office as of 2026-03-03
+    # (13 Democrats, 11 Republicans)
+    # Source: ballotpedia.org — "Incumbents retiring from public office" table
+    ("NV", "02"),   # Mark Amodei           R  — announced Feb 6, 2026
+    ("GA", "11"),   # Barry Loudermilk      R  — announced Feb 4, 2026
+    ("FL", "16"),   # Vern Buchanan         R  — announced Jan 27, 2026
+    ("FL", "02"),   # Neal Dunn             R  — announced Jan 13, 2026
+    ("CA", "26"),   # Julia Brownley        D  — announced Jan 8, 2026
+    ("MD", "05"),   # Steny Hoyer           D  — announced Jan 7, 2026
+    ("NY", "21"),   # Elise Stefanik        R  — announced Dec 19, 2025 (appointed Amb.)
+    ("WA", "04"),   # Dan Newhouse          R  — announced Dec 17, 2025
+    ("TX", "33"),   # Marc Veasey           D  — announced Dec 15, 2025
     ("TX", "37"),   # Lloyd Doggett         D  — announced Dec 5, 2025
     ("TX", "22"),   # Troy Nehls            R  — announced Nov 29, 2025
     ("NY", "07"),   # Nydia Velazquez       D  — announced Nov 20, 2025
@@ -776,38 +794,8 @@ RETIRING_DISTRICTS = {
     ("NE", "02"),   # Don Bacon             R  — announced Jun 30, 2025
     ("PA", "03"),   # Dwight Evans          D  — announced Jun 30, 2025
     ("IL", "09"),   # Jan Schakowsky        D  — announced May 5, 2025
-    # ── Running for U.S. Senate ──────────────────────────────────────────────
-    ("TX", "30"),   # Jasmine Crockett      D  — announced Dec 8, 2025
-    ("MA", "06"),   # Seth Moulton          D  — announced Oct 15, 2025
-    ("TX", "38"),   # Wesley Hunt           R  — announced Oct 6, 2025
-    ("IA", "02"),   # Ashley Hinson         R  — announced Sep 2, 2025
-    ("AL", "01"),   # Barry Moore           R  — announced Aug 12, 2025
-    ("GA", "10"),   # Mike Collins          R  — announced Jul 28, 2025
-    ("GA", "01"),   # Earl "Buddy" Carter   R  — announced May 8, 2025
-    ("IL", "08"),   # Raja Krishnamoorthi   D  — announced May 7, 2025
-    ("IL", "02"),   # Robin Kelly           D  — announced May 6, 2025
-    ("MN", "02"),   # Angie Craig           D  — announced Apr 29, 2025
-    ("KY", "06"),   # Andy Barr             R  — announced Apr 22, 2025
-    ("MI", "11"),   # Haley Stevens         D  — announced Apr 22, 2025
-    ("NH", "01"),   # Chris Pappas          D  — announced Apr 3, 2025
-    # ── Running for governor ─────────────────────────────────────────────────
-    ("CA", "14"),   # Eric Swalwell         D  — announced Nov 21, 2025
-    ("NY", "21"),   # Elise Stefanik        R  — announced Nov 7, 2025  (appointed Amb.)
-    ("AZ", "01"),   # David Schweikert      R  — announced Sep 30, 2025
-    ("WI", "07"),   # Tom Tiffany           R  — announced Sep 26, 2025
-    ("GA", "11"),   # Barry Loudermilk      R  — announced Feb 4, 2026
-    ("FL", "16"),   # Vern Buchanan         R  — announced Jan 27, 2026
-    ("FL", "02"),   # Neal Dunn             R  — announced Jan 13, 2026
-    ("CA", "26"),   # Julia Brownley        D  — announced Jan 8, 2026
-    ("MD", "05"),   # Steny Hoyer           D  — announced Jan 7, 2026
-    ("NV", "02"),   # Mark Amodei           R  — announced Feb 6, 2026
-    ("WA", "04"),   # Dan Newhouse          R  — announced Dec 17, 2025
-    ("TX", "33"),   # Marc Veasey           D  — announced Dec 15, 2025
-    # ── Running for attorney general ─────────────────────────────────────────
-    ("TX", "05"),   # Lance Gooden          R  — running for TX AG
 }
-print(f"  → {len(RETIRING_DISTRICTS)} confirmed House non-seekers hardcoded")
-print("  → All other House incumbents defaulting to seeking=True")
+print(f"  → {len(RETIRING_DISTRICTS)} confirmed House retirees (from public office)")
 
 # ── Helper: first House term start year ───────────────────────────────────────
 def first_house_year(leg):

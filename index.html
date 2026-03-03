@@ -1345,7 +1345,10 @@ function renderWall() {
   if (!n) return;
 
   const PAD    = {top: 20, right: 20, bottom: 70, left: 42};
-  const BAR_W  = Math.max(14, Math.min(30, Math.floor((W - PAD.left - PAD.right) / n) - 4));
+  // House gets narrower bars since we show ~65 members vs ~33 senators
+  const BAR_W  = isSen
+    ? Math.max(14, Math.min(30, Math.floor((W - PAD.left - PAD.right) / n) - 4))
+    : Math.max(9,  Math.min(18, Math.floor((W - PAD.left - PAD.right) / n) - 3));
   const GAP    = Math.max(2, Math.floor((W - PAD.left - PAD.right - n * BAR_W) / Math.max(n - 1, 1)));
   const CW     = n * BAR_W + (n - 1) * GAP;
   const CHART_H = 260;
@@ -1422,18 +1425,31 @@ function renderWall() {
       opacity: seeking ? 0.85 : 0.3,
     }, svg);
 
-    // State/district label (rotated -45°)
+    // State/district label — 90° rotation for House (denser), 45° for Senate
     const lx = x + BAR_W / 2;
-    const ly = PAD.top + CHART_H + 18;
     const xLabel = (!isSen && r.district) ? `${r.state}-${parseInt(r.district,10)||r.district}` : r.state;
-    svgEl('text', {
-      x: lx, y: ly,
-      'text-anchor': 'end',
-      'font-family': 'DM Mono,monospace',
-      'font-size': BAR_W >= 22 ? 9 : 8,
-      fill: seeking ? '#ccc' : '#444',
-      transform: `rotate(-45 ${lx} ${ly})`,
-    }, svg).textContent = xLabel;
+    if (isSen) {
+      const ly = PAD.top + CHART_H + 18;
+      svgEl('text', {
+        x: lx, y: ly,
+        'text-anchor': 'end',
+        'font-family': 'DM Mono,monospace',
+        'font-size': BAR_W >= 22 ? 9 : 8,
+        fill: seeking ? '#ccc' : '#444',
+        transform: `rotate(-45 ${lx} ${ly})`,
+      }, svg).textContent = xLabel;
+    } else {
+      // 90° upward from baseline for House — fits more labels
+      const ly = PAD.top + CHART_H + 6;
+      svgEl('text', {
+        x: lx, y: ly,
+        'text-anchor': 'start',
+        'font-family': 'DM Mono,monospace',
+        'font-size': 8,
+        fill: seeking ? '#bbb' : '#444',
+        transform: `rotate(-90 ${lx} ${ly})`,
+      }, svg).textContent = xLabel;
+    }
 
     // Tooltip
     const genLabel = GEN_SHORT[r.generation] || r.generation;
