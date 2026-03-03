@@ -77,7 +77,6 @@ Generational assignments use **Strauss-Howe** cutoffs:
 
 | Generation | Birth Years |
 |------------|-------------|
-| Pre-G.I. (fallback) | before 1843 |
 | Progressive | 1843–1859 |
 | Missionary | 1860–1882 |
 | Lost | 1883–1900 |
