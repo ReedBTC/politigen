@@ -59,7 +59,7 @@ politigen/
     ├── congress_snapshots_detail.csv # Per-generation stats at 1965, 1985, 2005, 2025
     ├── bls_gen_comparison.csv        # Generational share by BLS industry sector
     ├── presidents.csv                # One row per presidential term start since 1901
-    └── senators_2026.csv             # Class II incumbents on the 2026 ballot
+    └── senators_2026.csv             # Class II Senate + all House incumbents on the 2026 ballot
 ```
 
 ---
@@ -70,6 +70,7 @@ politigen/
 |--------|-----------------|
 | [unitedstates/congress-legislators](https://github.com/unitedstates/congress-legislators) | Every Congress member since 1789 with exact birth dates and term dates |
 | [BLS CPS Table 18b](https://www.bls.gov/cps/cpsaat18b.xlsx) | Employed persons by industry and age bracket (annual average) |
+| [FEC Candidates API](https://api.open.fec.gov/developers) | 2026 House incumbent filings (`incumbent_challenge=I`), used to determine which House members are seeking re-election |
 
 Generational assignments use **Strauss-Howe** cutoffs:
 
@@ -88,13 +89,11 @@ Generational assignments use **Strauss-Howe** cutoffs:
 
 Congressional data uses exact birth dates from the legislators JSON. BLS data uses age brackets, so generational shares are approximated by proportionally splitting BLS's 10-year brackets across generation boundaries.
 
-The `senators_2026.csv` is also derived from the legislators JSON but includes a manually maintained `NOT_SEEKING` set (retirements and withdrawals) that should be updated as announcements come in ahead of the election.
-
 ---
 
 ## Refreshing the Data
 
-Running `collect_politigen.py` fetches fresh data from GitHub and BLS and overwrites all five CSVs. The CSVs are committed to the repo so the site works out of the box without running the script.
+Running `collect_politigen.py` fetches fresh data from GitHub, BLS, and the FEC and overwrites all five CSVs. The CSVs are committed to the repo so the site works out of the box without running the script.
 
 ```bash
 python collect_politigen.py
@@ -106,10 +105,31 @@ Expected output:
 ✅ data/congress_snapshots_detail.csv  — 31 rows
 ✅ data/bls_gen_comparison.csv         — 15 rows
 ✅ data/presidents.csv                 — 36 rows
-✅ data/senators_2026.csv              — 33 rows
+✅ data/senators_2026.csv              — ~470 rows (33 Senate + ~435 House)
 ```
 
-**Note on `senators_2026.csv`:** The `NOT_SEEKING` set near the top of Part 4 in `collect_politigen.py` must be kept current manually. Add names as retirement and withdrawal announcements are confirmed.
+---
+
+## Keeping `senators_2026.csv` Current
+
+The re-election status for Senate and House incumbents is determined two different ways, for good reason:
+
+**House — FEC API (automatic).** With 435 seats, it's impractical to track individual retirement announcements. The script queries the FEC Candidates API for House incumbents who have filed for 2026 (`office=H, incumbent_challenge=I`). House members tend to file relatively early in the cycle, so this signal is reliable. No manual maintenance needed.
+
+**Senate — hardcoded retirement list (manual).** The FEC approach breaks down for Senate because senators file paperwork much later — early in a cycle, only 1–2 of 33 incumbents may have filed, which would incorrectly mark the other 31 as "not seeking re-election." Instead, the script defaults everyone to `seeking=True` and maintains a small `RETIRING_STATES` set of confirmed retirements. Since there are only ever ~8 retirements per cycle and each one is national news, this is easy to keep up to date.
+
+**To add a new Senate retirement:** open `collect_politigen.py`, find the `RETIRING_STATES` set near the top of Part 4, add the two-letter state code with a dated comment, update the "Last validated" date, and rerun the script. Example:
+
+```python
+RETIRING_STATES = {
+    "DE",   # Chris Coons       — announced 2025-01-07
+    "GA",   # Jon Ossoff        — announced 2025-02-10  (running for governor)
+    ...
+}
+```
+
+To verify the list is complete, check:
+[ballotpedia.org/List_of_U.S._Senate_incumbents_who_are_not_running_for_re-election_in_2026](https://ballotpedia.org/List_of_U.S._Senate_incumbents_who_are_not_running_for_re-election_in_2026)
 
 ---
 
