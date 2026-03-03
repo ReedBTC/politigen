@@ -15,10 +15,13 @@ Compares the generational makeup of elected officials against every BLS workforc
 Interactive line charts of each generation's share of the House and Senate from 1901 to 2025. Presidential term dots sit on each president's generation curve. Boomers have held power longer than any generation before them — and still aren't letting go.
 
 **Section 02 — Congress Is Getting Older**
-Mean and median age of Congress since 1901, with Senate and House broken out. A dramatic aging trend began in the 1980s and has never reversed. Mean age has risen from 48.3 (1901) to 58.5 (2025).
+Mean age of the Senate and House since 1901, with presidential ages overlaid. A dramatic aging trend began in the 1980s and has never reversed.
 
 **Section 03 — Aging In Place**
 Snapshot cards at four moments in history (1965, 1985, 2005, 2025) showing each generation's seat share and mean age. Toggle between House and Senate views.
+
+**Section 04 — The Calcification Wall**
+Every Class II senator on the 2026 ballot, visualized as a pillar. Height = years in the Senate. Color = generation. Seekers glow; retirees fade. Sort by tenure, age, or state. Stat callouts show how many of the re-election seekers are Boomer-or-older and what age the oldest would reach at the end of a next full term.
 
 ---
 
@@ -55,7 +58,8 @@ politigen/
     ├── congress_historical.csv       # One row per Congress, 57th–119th (1901–2025)
     ├── congress_snapshots_detail.csv # Per-generation stats at 1965, 1985, 2005, 2025
     ├── bls_gen_comparison.csv        # Generational share by BLS industry sector
-    └── presidents.csv                # One row per presidential term start since 1901
+    ├── presidents.csv                # One row per presidential term start since 1901
+    └── senators_2026.csv             # Class II incumbents on the 2026 ballot
 ```
 
 ---
@@ -84,11 +88,13 @@ Generational assignments use **Strauss-Howe** cutoffs:
 
 Congressional data uses exact birth dates from the legislators JSON. BLS data uses age brackets, so generational shares are approximated by proportionally splitting BLS's 10-year brackets across generation boundaries.
 
+The `senators_2026.csv` is also derived from the legislators JSON but includes a manually maintained `NOT_SEEKING` set (retirements and withdrawals) that should be updated as announcements come in ahead of the election.
+
 ---
 
 ## Refreshing the Data
 
-Running `collect_politigen.py` fetches fresh data from GitHub and BLS and overwrites all four CSVs. The CSVs are committed to the repo so the site works out of the box without running the script.
+Running `collect_politigen.py` fetches fresh data from GitHub and BLS and overwrites all five CSVs. The CSVs are committed to the repo so the site works out of the box without running the script.
 
 ```bash
 python collect_politigen.py
@@ -100,7 +106,10 @@ Expected output:
 ✅ data/congress_snapshots_detail.csv  — 31 rows
 ✅ data/bls_gen_comparison.csv         — 15 rows
 ✅ data/presidents.csv                 — 36 rows
+✅ data/senators_2026.csv              — 33 rows
 ```
+
+**Note on `senators_2026.csv`:** The `NOT_SEEKING` set near the top of Part 4 in `collect_politigen.py` must be kept current manually. Add names as retirement and withdrawal announcements are confirmed.
 
 ---
 

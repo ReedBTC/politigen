@@ -1,0 +1,36 @@
+last,first,state,party,born,generation,since,years_served,seeking_reelection,age_now,age_end_next_term
+Collins,Susan,ME,Republican,1952,Baby Boom Generation,1997,30,True,74,81
+Durbin,Richard,IL,Democrat,1944,Baby Boom Generation,1997,30,True,82,89
+Reed,John,RI,Democrat,1949,Baby Boom Generation,1997,30,True,77,84
+Cornyn,John,TX,Republican,1952,Baby Boom Generation,2002,25,True,74,81
+Graham,Lindsey,SC,Republican,1955,Baby Boom Generation,2003,24,True,71,78
+Merkley,Jeff,OR,Democrat,1956,Baby Boom Generation,2009,18,True,70,77
+Risch,James,ID,Republican,1943,Baby Boom Generation,2009,18,True,83,90
+Warner,Mark,VA,Democrat,1954,Baby Boom Generation,2009,18,True,72,79
+Coons,Christopher,DE,Democrat,1963,Gen X (13ers),2010,17,True,63,70
+Markey,Edward,MA,Democrat,1946,Baby Boom Generation,2013,14,True,80,87
+Booker,Cory,NJ,Democrat,1969,Gen X (13ers),2013,14,True,57,64
+Capito,Shelley,WV,Republican,1953,Baby Boom Generation,2015,12,True,73,80
+Cassidy,Bill,LA,Republican,1957,Baby Boom Generation,2015,12,True,69,76
+Cotton,Tom,AR,Republican,1977,Gen X (13ers),2015,12,True,49,56
+Daines,Steve,MT,Republican,1962,Gen X (13ers),2015,12,True,64,71
+Sullivan,Dan,AK,Republican,1964,Gen X (13ers),2015,12,True,62,69
+Rounds,Mike,SD,Republican,1954,Baby Boom Generation,2015,12,True,72,79
+Hyde-Smith,Cindy,MS,Republican,1959,Baby Boom Generation,2018,9,True,67,74
+Luján,Ben,NM,Democrat,1972,Gen X (13ers),2021,6,True,54,61
+Marshall,Roger,KS,Republican,1960,Baby Boom Generation,2021,6,True,66,73
+Lummis,Cynthia,WY,Republican,1954,Baby Boom Generation,2021,6,True,72,79
+Hickenlooper,John,CO,Democrat,1952,Baby Boom Generation,2021,6,True,74,81
+Hagerty,Bill,TN,Republican,1959,Baby Boom Generation,2021,6,True,67,74
+Padilla,Alejandro,CA,Democrat,1973,Gen X (13ers),2021,6,True,53,60
+Ossoff,Jon,GA,Democrat,1987,Millennial Generation,2021,6,True,39,46
+Warnock,Raphael,GA,Democrat,1969,Gen X (13ers),2021,6,True,57,64
+Mullin,Markwayne,OK,Republican,1977,Gen X (13ers),2023,4,True,49,56
+Ricketts,Pete,NE,Republican,1964,Gen X (13ers),2023,4,True,62,69
+McConnell,Mitch,KY,Republican,1942,Silent Generation,1985,42,False,84,91
+Shaheen,Jeanne,NH,Democrat,1947,Baby Boom Generation,2009,18,False,79,86
+Peters,Gary,MI,Democrat,1958,Baby Boom Generation,2015,12,False,68,75
+Ernst,Joni,IA,Republican,1970,Gen X (13ers),2015,12,False,56,63
+Tillis,Thom,NC,Republican,1960,Baby Boom Generation,2015,12,False,66,73
+Smith,Tina,MN,Democrat,1958,Baby Boom Generation,2018,9,False,68,75
+Tuberville,Tommy,AL,Republican,1954,Baby Boom Generation,2021,6,False,72,79

@@ -1,4 +1,4 @@
-# GenGov — Generational Representation in U.S. Government
+# Politigen — Generational Representation in U.S. Government
 # Python 3.10+ required
 #
 # Install: pip install -r requirements.txt
@@ -13,7 +13,3 @@ requests==2.32.5          # HTTP requests to GitHub APIs and BLS
 # Data processing
 pandas==3.0.1             # Tabular data manipulation
 openpyxl==3.1.5           # Reading BLS Excel files (.xlsx)
-
-# Visualization
-matplotlib==3.10.8        # Chart generation (Python-side charts)
-seaborn==0.13.2           # Statistical plot styling

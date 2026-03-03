@@ -11,6 +11,7 @@ Outputs (written to data/):
     data/congress_snapshots_detail.csv — per-generation stats at 4 snapshot years
     data/bls_gen_comparison.csv        — generational share % by BLS sector + officials
     data/presidents.csv                — one row per presidential term start since 1901
+    data/senators_2026.csv             — one row per senator with tenure, generation, and re-election status 
 """
 
 import io
@@ -499,6 +500,175 @@ for gen, grp in pres_df.groupby("generation"):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# PART 4: 2026 SENATE ELECTIONS — CALCIFICATION WALL
+# (HTML section 4 — The Calcification Wall)
+#
+# Uses the `curr` legislators JSON already downloaded in Part 1.
+# Identifies Class II senators (terms ending ~Jan 2027) and outputs
+# one row per senator with tenure, generation, and re-election status.
+# ══════════════════════════════════════════════════════════════════════════════
+
+print("\n" + "=" * 60)
+print("PART 4: 2026 Senate elections — Calcification Wall")
+print("=" * 60)
+
+# ── Incumbents NOT seeking re-election in 2026 ────────────────────────────────
+# Maintained manually — update each cycle as announcements come in.
+# Key: "FirstLast" matching the legislators JSON name fields.
+# Source: Ballotpedia / news reporting as of early 2026.
+NOT_SEEKING = {
+    ("McConnell",   "Mitch"),    # KY — Silent  — retiring
+    ("Durbin",      "Dick"),     # IL — Boomer  — retiring
+    ("Shaheen",     "Jeanne"),   # NH — Boomer  — retiring
+    ("Smith",       "Tina"),     # MN — Boomer  — retiring
+    ("Tuberville",  "Tommy"),    # AL — Boomer  — withdrew
+    ("Peters",      "Gary"),     # MI — Boomer  — withdrew
+    ("Ernst",       "Joni"),     # IA — Gen X   — withdrew
+    ("Tillis",      "Thom"),     # NC — Boomer  — withdrew
+}
+
+# ── Special elections in 2026 (seat only, not regular Class II cycle) ─────────
+# Florida (Rubio seat) and Ohio (Vance seat) are special elections.
+# We include them as context but flag them separately.
+SPECIAL_ELECTIONS = {
+    "FL-special",
+    "OH-special",
+}
+
+# ── Identify Class II senators from the current legislators JSON ──────────────
+# Class II senators have terms ending in January 2027.
+# In the JSON, their most recent senate term end date will be "2027-01-03"
+# or their term started in 2021 (last regular Class II election year).
+
+def is_class_ii(leg):
+    """Return True if this legislator is a current Class II senator."""
+    terms = leg.get("terms", [])
+    # Walk terms in reverse to find most recent senate term
+    for term in reversed(terms):
+        if term.get("type") != "sen":
+            continue
+        end = term.get("end", "")
+        start = term.get("start", "")
+        # Class II: term ends Jan 2027
+        if end.startswith("2027-01"):
+            return True
+        # Some current members may not have end date populated yet
+        # Fall back: started in 2021 or 2023 (special) with no later term
+        if start.startswith("2021-01"):  # Class II elected Nov 2020, end date may not be populated
+            return True
+    return False
+
+def first_senate_year(leg):
+    """Year the legislator first took a senate seat."""
+    years = []
+    for term in leg.get("terms", []):
+        if term.get("type") == "sen":
+            s = term.get("start", "")
+            if s:
+                try:
+                    years.append(int(s[:4]))
+                except:
+                    pass
+    return min(years) if years else None
+
+def get_party(leg):
+    """Most recent party affiliation."""
+    for term in reversed(leg.get("terms", [])):
+        p = term.get("party", "")
+        if p:
+            return p
+    return "Unknown"
+
+# ── Build the 2026 senate rows ─────────────────────────────────────────────────
+sen26_rows = []
+
+for leg in curr:
+    terms = leg.get("terms", [])
+    # Must have at least one senate term
+    if not any(t.get("type") == "sen" for t in terms):
+        continue
+    # Must be Class II
+    if not is_class_ii(leg):
+        continue
+
+    bio    = leg.get("bio", {})
+    name   = leg.get("name", {})
+    last   = name.get("last", "")
+    first  = name.get("first", "")
+    dob    = bio.get("birthday", "")
+    by     = parse_birth_year(dob)
+    gen    = classify_generation(by)
+
+    # Most recent senate term for state and party
+    most_recent_sen = None
+    for term in reversed(terms):
+        if term.get("type") == "sen":
+            most_recent_sen = term
+            break
+
+    if not most_recent_sen:
+        continue
+
+    state  = most_recent_sen.get("state", "")
+    party  = most_recent_sen.get("party", get_party(leg))
+    since  = first_senate_year(leg)
+
+    seeking = (last, first) not in NOT_SEEKING
+
+    # Years served as of 2027 (end of current term)
+    years_served = (2027 - since) if since else None
+
+    # Age at end of NEXT term if re-elected (6 more years from 2027)
+    age_now        = (2026 - by)       if by else None
+    age_end_term   = (2033 - by)       if by else None  # end of next term
+
+    sen26_rows.append({
+        "last":             last,
+        "first":            first,
+        "state":            state,
+        "party":            party,
+        "born":             by,
+        "generation":       gen,
+        "since":            since,
+        "years_served":     years_served,
+        "seeking_reelection": seeking,
+        "age_now":          age_now,
+        "age_end_next_term": age_end_term,
+    })
+
+# ── Sort: seeking re-election first, then by tenure desc ──────────────────────
+sen26_rows.sort(key=lambda r: (
+    0 if r["seeking_reelection"] else 1,
+    -(r["years_served"] or 0)
+))
+
+sen26_df = pd.DataFrame(sen26_rows)
+sen26_df.to_csv(os.path.join(DATA_DIR, "senators_2026.csv"), index=False)
+
+print(f"\n✅ data/senators_2026.csv  — {len(sen26_df)} rows")
+
+# ── Sanity checks ──────────────────────────────────────────────────────────────
+print(f"\n── Sanity check: seeking re-election ──")
+seeking_df  = sen26_df[sen26_df["seeking_reelection"] == True]
+retiring_df = sen26_df[sen26_df["seeking_reelection"] == False]
+print(f"  Seeking re-election:  {len(seeking_df)}")
+print(f"  Not seeking:          {len(retiring_df)}")
+
+print(f"\n── Sanity check: generations (seeking re-election only) ──")
+for gen, grp in seeking_df.groupby("generation"):
+    names = ", ".join(grp["last"].tolist())
+    print(f"  {gen}: {names}")
+
+print(f"\n── Sanity check: oldest seeking re-election ──")
+oldest = seeking_df.dropna(subset=["born"]).sort_values("born").iloc[0]
+print(f"  {oldest['first']} {oldest['last']} ({oldest['state']}) — born {int(oldest['born'])}, age end of next term: {int(oldest['age_end_next_term'])}")
+
+print(f"\n── Sanity check: longest serving seeking re-election ──")
+longest = seeking_df.dropna(subset=["years_served"]).sort_values("years_served", ascending=False).iloc[0]
+print(f"  {longest['first']} {longest['last']} ({longest['state']}) — in Senate since {int(longest['since'])}, {int(longest['years_served'])} years")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # SUMMARY
 # ══════════════════════════════════════════════════════════════════════════════
 print("\n" + "=" * 60)
@@ -507,8 +677,19 @@ print(f"  data/congress_historical.csv       — {len(hist_df)} congress rows")
 print(f"  data/congress_snapshots_detail.csv — {len(snap_df)} snapshot rows")
 print(f"  data/bls_gen_comparison.csv        — {len(bls_df)} sector rows")
 print(f"  data/presidents.csv                — {len(pres_df)} term rows")
+print(f"  data/senators_2026.csv             — {len(sen26_df)} senator rows")
 print("=" * 60)
 
 print("\n── Sanity check: mean age ──")
 print(f"  {int(hist_df.iloc[0]['year'])} → {hist_df.iloc[0]['mean_age']}  (expected ~48.3)")
 print(f"  {int(hist_df.iloc[-1]['year'])} → {hist_df.iloc[-1]['mean_age']}  (expected ~58.5)")
+
+print("\n── Sanity check: 2026 senate ──")
+seeking  = sen26_df[sen26_df["seeking_reelection"] == True]
+retiring = sen26_df[sen26_df["seeking_reelection"] == False]
+boomers_plus = seeking[seeking["born"] <= 1960]
+print(f"  Total Class II seats:        {len(sen26_df)}")
+print(f"  Seeking re-election:         {len(seeking)}")
+print(f"  Not seeking:                 {len(retiring)}")
+print(f"  Boomers or older (seeking):  {len(boomers_plus)}")
+print(f"  Avg years served (seeking):  {seeking['years_served'].mean():.1f}")

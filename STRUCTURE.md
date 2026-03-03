@@ -38,8 +38,6 @@ politigen/
 │   │                                 #          n, mean_age, pct
 │   │                                 # Years: 1965, 1985, 2005, 2025
 │   │                                 # Chambers: House, Senate
-│   │                                 # Generations: Progressive, Missionary, Lost (where
-│   │                                 #   present), G.I., Silent, Boomer, Gen X, Millennial
 │   │                                 # Feeds: Section 3 (Snapshots)
 │   │
 │   ├── bls_gen_comparison.csv        # Generational share % by industry sector
@@ -51,10 +49,22 @@ politigen/
 │   │                                 #          pct_genx, pct_boomer, pct_silent
 │   │                                 # Feeds: Section 0 (Workforce Comparison)
 │   │
-│   └── presidents.csv                # One row per presidential term start since 1901.
-│                                     # Columns: year, name, birth_year, generation, how
-│                                     # 'how' is 'elected' or 'succession'
-│                                     # Feeds: Section 1 (Rise & Fall — dots on curves)
+│   ├── presidents.csv                # One row per presidential term start since 1901.
+│   │                                 # Columns: year, name, birth_year, generation, how
+│   │                                 # 'how' is 'elected' or 'succession'
+│   │                                 # Feeds: Section 1 (dots on Rise & Fall curves) and
+│   │                                 #        Section 2 (Age Trend — president age dots)
+│   │
+│   └── senators_2026.csv             # Class II senators on the 2026 ballot.
+│                                     # One row per incumbent.
+│                                     # Columns: last, first, state, party, born,
+│                                     #          generation, since, years_served,
+│                                     #          seeking_reelection,
+│                                     #          age_now, age_end_next_term
+│                                     # seeking_reelection is derived from the NOT_SEEKING
+│                                     # set in collect_politigen.py — update manually as
+│                                     # retirement/withdrawal announcements are confirmed.
+│                                     # Feeds: Section 4 (Calcification Wall)
 │
 └── index.html                   # The visualization. One self-contained file.
                                  # Served via GitHub Pages from repo root.
@@ -119,6 +129,7 @@ unitedstates/congress-legislators (GitHub)
                                                                  ──► data/congress_snapshots_detail.csv
                                                                  ──► data/bls_gen_comparison.csv
                                                                  ──► data/presidents.csv
+                                                                 ──► data/senators_2026.csv
 BLS.gov (CPS Table 18b Excel)
     └── cpsaat18b.xlsx ───────────────────► collect_politigen.py ──► data/bls_gen_comparison.csv
 
