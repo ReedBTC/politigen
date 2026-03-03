@@ -32,6 +32,7 @@ Ernst,Joni,IA,,Republican,1970,Gen X (13ers),2015,12,False,56,63,Senate
 Tillis,Thom,NC,,Republican,1960,Baby Boom Generation,2015,12,False,66,73,Senate
 Smith,Tina,MN,,Democrat,1958,Baby Boom Generation,2018,9,False,68,75,Senate
 Lummis,Cynthia,WY,,Republican,1954,Baby Boom Generation,2021,6,False,72,79,Senate
+Norton,Eleanor,DC,00,Democrat,1937,Silent Generation,1991,36,False,89,92,House
 Hoyer,Steny,MD,05,Democrat,1939,Silent Generation,1981,46,False,87,90,House
 Pelosi,Nancy,CA,11,Democrat,1940,Silent Generation,1987,40,False,86,89,House
 Davis,Danny,IL,07,Democrat,1941,Silent Generation,1997,30,False,85,88,House
@@ -56,7 +57,6 @@ Arrington,Jodey,TX,19,Republican,1972,Gen X (13ers),2017,10,False,54,57,House
 Luttrell,Morgan,TX,08,Republican,1975,Gen X (13ers),2023,4,False,51,54,House
 Golden,Jared,ME,02,Democrat,1982,Millennial Generation,2019,8,False,44,47,House
 Stefanik,Elise,NY,21,Republican,1984,Millennial Generation,2015,12,False,42,45,House
-Norton,Eleanor,DC,00,Democrat,1937,Silent Generation,1991,36,True,89,92,House
 Rogers,Harold,KY,05,Republican,1937,Silent Generation,1981,46,True,89,92,House
 Waters,Maxine,CA,43,Democrat,1938,Silent Generation,1991,36,True,88,91,House
 Clyburn,James,SC,06,Democrat,1940,Silent Generation,1993,34,True,86,89,House

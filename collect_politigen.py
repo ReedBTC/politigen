@@ -772,6 +772,7 @@ RETIRING_DISTRICTS = {
     # Source: ballotpedia.org — "Incumbents retiring from public office" table
     ("NV", "02"),   # Mark Amodei           R  — announced Feb 6, 2026
     ("GA", "11"),   # Barry Loudermilk      R  — announced Feb 4, 2026
+    ("DC", "00"),   # Eleanor Holmes Norton D  — announced Jan 27, 2026
     ("FL", "16"),   # Vern Buchanan         R  — announced Jan 27, 2026
     ("FL", "02"),   # Neal Dunn             R  — announced Jan 13, 2026
     ("CA", "26"),   # Julia Brownley        D  — announced Jan 8, 2026
