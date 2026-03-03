@@ -11,7 +11,9 @@ Outputs (written to data/):
     data/congress_snapshots_detail.csv — per-generation stats at 4 snapshot years
     data/bls_gen_comparison.csv        — generational share % by BLS sector + officials
     data/presidents.csv                — one row per presidential term start since 1901
-    data/senators_2026.csv             — one row per senator with tenure, generation, and re-election status 
+    data/senators_2026.csv             — Class II incumbents on the 2026 ballot, with
+                                         tenure, generation, and re-election status sourced
+                                         from the FEC API (api.fec.gov)
 """
 
 import io
@@ -506,34 +508,54 @@ for gen, grp in pres_df.groupby("generation"):
 # Uses the `curr` legislators JSON already downloaded in Part 1.
 # Identifies Class II senators (terms ending ~Jan 2027) and outputs
 # one row per senator with tenure, generation, and re-election status.
+#
+# Re-election status is determined dynamically by querying the FEC API
+# for 2026 Senate incumbents who have filed as candidates. Any Class II
+# senator whose state does NOT appear in the FEC filings is assumed to
+# not be seeking re-election.
+#
+# FEC API docs: https://api.open.fec.gov/developers
+# A free API key can be obtained at https://api.data.gov/signup
+# The DEMO_KEY below works for low-volume use (~1000 req/hour per IP).
 # ══════════════════════════════════════════════════════════════════════════════
 
 print("\n" + "=" * 60)
 print("PART 4: 2026 Senate elections — Calcification Wall")
 print("=" * 60)
 
-# ── Incumbents NOT seeking re-election in 2026 ────────────────────────────────
-# Maintained manually — update each cycle as announcements come in.
-# Key: "FirstLast" matching the legislators JSON name fields.
-# Source: Ballotpedia / news reporting as of early 2026.
-NOT_SEEKING = {
-    ("McConnell",   "Mitch"),    # KY — Silent  — retiring
-    ("Durbin",      "Dick"),     # IL — Boomer  — retiring
-    ("Shaheen",     "Jeanne"),   # NH — Boomer  — retiring
-    ("Smith",       "Tina"),     # MN — Boomer  — retiring
-    ("Tuberville",  "Tommy"),    # AL — Boomer  — withdrew
-    ("Peters",      "Gary"),     # MI — Boomer  — withdrew
-    ("Ernst",       "Joni"),     # IA — Gen X   — withdrew
-    ("Tillis",      "Thom"),     # NC — Boomer  — withdrew
-}
+# ── Query FEC API for 2026 Senate incumbent filers ────────────────────────────
+FEC_API_KEY = "DEMO_KEY"   # Replace with your key from api.data.gov/signup
+FEC_URL     = "https://api.open.fec.gov/v1/candidates/"
 
-# ── Special elections in 2026 (seat only, not regular Class II cycle) ─────────
-# Florida (Rubio seat) and Ohio (Vance seat) are special elections.
-# We include them as context but flag them separately.
-SPECIAL_ELECTIONS = {
-    "FL-special",
-    "OH-special",
-}
+print("\nFetching 2026 Senate incumbent filings from FEC API...")
+seeking_states = set()
+
+try:
+    page, per_page = 1, 100
+    while True:
+        resp = requests.get(FEC_URL, timeout=30, params={
+            "api_key":            FEC_API_KEY,
+            "office":             "S",
+            "election_year":      2026,
+            "incumbent_challenge": "I",   # I = incumbent, C = challenger, O = open seat
+            "per_page":           per_page,
+            "page":               page,
+        })
+        resp.raise_for_status()
+        data    = resp.json()
+        results = data.get("results", [])
+        for r in results:
+            seeking_states.add(r["state"])
+        print(f"  → Page {page}: {len(results)} results, seeking states so far: {sorted(seeking_states)}")
+        pagination = data.get("pagination", {})
+        if page >= pagination.get("pages", 1):
+            break
+        page += 1
+    print(f"  → {len(seeking_states)} states with incumbent filers: {sorted(seeking_states)}")
+except Exception as e:
+    print(f"  ⚠ FEC API error: {e}")
+    print("  ⚠ Falling back to empty seeking_states — all senators will show as not seeking")
+    seeking_states = set()
 
 # ── Identify Class II senators from the current legislators JSON ──────────────
 # Class II senators have terms ending in January 2027.
@@ -552,9 +574,10 @@ def is_class_ii(leg):
         # Class II: term ends Jan 2027
         if end.startswith("2027-01"):
             return True
-        # Some current members may not have end date populated yet
-        # Fall back: started in 2021 or 2023 (special) with no later term
-        if start.startswith("2021-01"):  # Class II elected Nov 2020, end date may not be populated
+        # Some current members may not have end date populated yet.
+        # Fall back: started Jan 2021 = elected Nov 2020 = Class II.
+        # Do NOT include 2023-01 — those are Class III (elected Nov 2022).
+        if start.startswith("2021-01"):
             return True
     return False
 
@@ -613,7 +636,7 @@ for leg in curr:
     party  = most_recent_sen.get("party", get_party(leg))
     since  = first_senate_year(leg)
 
-    seeking = (last, first) not in NOT_SEEKING
+    seeking = state in seeking_states
 
     # Years served as of 2027 (end of current term)
     years_served = (2027 - since) if since else None
@@ -660,12 +683,18 @@ for gen, grp in seeking_df.groupby("generation"):
     print(f"  {gen}: {names}")
 
 print(f"\n── Sanity check: oldest seeking re-election ──")
-oldest = seeking_df.dropna(subset=["born"]).sort_values("born").iloc[0]
-print(f"  {oldest['first']} {oldest['last']} ({oldest['state']}) — born {int(oldest['born'])}, age end of next term: {int(oldest['age_end_next_term'])}")
+if len(seeking_df) == 0:
+    print("  ⚠ No seekers found — FEC data may be unavailable")
+else:
+    oldest = seeking_df.dropna(subset=["born"]).sort_values("born").iloc[0]
+    print(f"  {oldest['first']} {oldest['last']} ({oldest['state']}) — born {int(oldest['born'])}, age end of next term: {int(oldest['age_end_next_term'])}")
 
 print(f"\n── Sanity check: longest serving seeking re-election ──")
-longest = seeking_df.dropna(subset=["years_served"]).sort_values("years_served", ascending=False).iloc[0]
-print(f"  {longest['first']} {longest['last']} ({longest['state']}) — in Senate since {int(longest['since'])}, {int(longest['years_served'])} years")
+if len(seeking_df) == 0:
+    print("  ⚠ No seekers found — FEC data may be unavailable")
+else:
+    longest = seeking_df.dropna(subset=["years_served"]).sort_values("years_served", ascending=False).iloc[0]
+    print(f"  {longest['first']} {longest['last']} ({longest['state']}) — in Senate since {int(longest['since'])}, {int(longest['years_served'])} years")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -691,5 +720,8 @@ boomers_plus = seeking[seeking["born"] <= 1960]
 print(f"  Total Class II seats:        {len(sen26_df)}")
 print(f"  Seeking re-election:         {len(seeking)}")
 print(f"  Not seeking:                 {len(retiring)}")
-print(f"  Boomers or older (seeking):  {len(boomers_plus)}")
-print(f"  Avg years served (seeking):  {seeking['years_served'].mean():.1f}")
+if len(seeking) > 0:
+    print(f"  Boomers or older (seeking):  {len(boomers_plus)}")
+    print(f"  Avg years served (seeking):  {seeking['years_served'].mean():.1f}")
+else:
+    print(f"  ⚠ Seeking count is 0 — FEC API may have been unreachable")
