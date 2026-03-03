@@ -966,7 +966,7 @@ function buildAgeChart(histRows, presRows) {
   // Post-1980 shading
   svgEl('rect',{x:xS(1980),y:PAD.top,width:xS(maxYear)-xS(1980),height:CH,fill:'#e05252',opacity:0.04},svg);
   svgEl('line',{x1:xS(1980),x2:xS(1980),y1:PAD.top,y2:PAD.top+CH,stroke:'#e05252','stroke-width':1,'stroke-dasharray':'3,3',opacity:0.5},svg);
-  svgEl('text',{x:xS(1980)+5,y:PAD.top+12,'font-family':'DM Mono,monospace','font-size':9,fill:'#e05252',opacity:0.8},svg).textContent='THE AGING BEGINS →';
+  svgEl('text',{x:xS(1980)+5,y:PAD.top+12,'font-family':'DM Mono,monospace','font-size':9,fill:'#e05252',opacity:0.8},svg).textContent='CONGRESSIONAL AGING BEGINS →';
 
   // Senate line (#EB3324)
   const senatePath = histRows
