@@ -548,6 +548,7 @@ print("\nUsing hardcoded retirement list for 2026 Senate Class II...")
 #
 # Last validated against Ballotpedia: 2026-03-02
 # Ballotpedia confirmed count as of 2025-11-29: 8 (four D, four R) — matches list below.
+# McConnell (KY) announced 2026-02-16, bringing confirmed total to 9.
 #
 # NOTE: Senators running for governor (Ossoff, Schatz) count as "not seeking
 # re-election" to their Senate seat, which is what this flag means for our viz.
@@ -556,6 +557,7 @@ RETIRING_STATES = {
     "GA",   # Jon Ossoff        — announced 2025-02-10  (running for governor)
     "HI",   # Brian Schatz      — announced 2025-01-10  (running for governor)
     "IL",   # Dick Durbin       — announced 2023-02-22
+    "KY",   # Mitch McConnell   — announced 2026-02-16
     "MI",   # Gary Peters       — announced 2023-11-02
     "MN",   # Tina Smith        — announced 2024-11-20
     "NH",   # Jeanne Shaheen    — announced 2024-03-18

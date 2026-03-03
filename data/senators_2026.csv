@@ -1,5 +1,4 @@
 last,first,state,district,party,born,generation,since,years_served,seeking_reelection,age_now,age_end_next_term,chamber
-McConnell,Mitch,KY,,Republican,1942,Silent Generation,1985,42,True,84,91,Senate
 Collins,Susan,ME,,Republican,1952,Baby Boom Generation,1997,30,True,74,81,Senate
 Reed,John,RI,,Democrat,1949,Baby Boom Generation,1997,30,True,77,84,Senate
 Cornyn,John,TX,,Republican,1952,Baby Boom Generation,2002,25,True,74,81,Senate
@@ -25,6 +24,7 @@ Hickenlooper,John,CO,,Democrat,1952,Baby Boom Generation,2021,6,True,74,81,Senat
 Hagerty,Bill,TN,,Republican,1959,Baby Boom Generation,2021,6,True,67,74,Senate
 Mullin,Markwayne,OK,,Republican,1977,Gen X (13ers),2023,4,True,49,56,Senate
 Ricketts,Pete,NE,,Republican,1964,Gen X (13ers),2023,4,True,62,69,Senate
+McConnell,Mitch,KY,,Republican,1942,Silent Generation,1985,42,False,84,91,Senate
 Durbin,Richard,IL,,Democrat,1944,Baby Boom Generation,1997,30,False,82,89,Senate
 Shaheen,Jeanne,NH,,Democrat,1947,Baby Boom Generation,2009,18,False,79,86,Senate
 Coons,Christopher,DE,,Democrat,1963,Gen X (13ers),2010,17,False,63,70,Senate

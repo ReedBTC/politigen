@@ -508,7 +508,7 @@
     <a href="#rise-fall">Rise &amp; Fall</a>
     <a href="#aging">Congress Ages</a>
     <a href="#snapshots">Snapshots</a>
-    <a href="#wall">2026 Senate</a>
+    <a href="#wall">2026 Wall</a>
   </nav>
 </header>
 
@@ -618,7 +618,7 @@
 <section class="section" id="wall">
   <div class="section-eyebrow">Section 04</div>
   <h2>The <em>Calcification</em> Wall.</h2>
-  <p class="subtitle">33 Senate seats and all 435 House seats are on the ballot in 2026. These are the incumbents — how long they've been there, and whether they're letting go. Each pillar is one member. Height = years served. The ones still holding on are lit. The ones stepping aside are faded.</p>
+  <p class="subtitle">33 Senate seats are on the ballot in 2026. These are the Class II incumbents — how long they've been there, and whether they're letting go. Each pillar is one senator. Height = years served. The ones still holding on are lit. The ones stepping aside are faded.</p>
 
   <div class="wall-stats" id="wall-stats"></div>
 
@@ -627,10 +627,6 @@
       <button class="tab active wall-sort-tab" onclick="wallSort('tenure', event)">By Tenure</button>
       <button class="tab wall-sort-tab" onclick="wallSort('age', event)">By Age</button>
     </div>
-    <div class="tabs">
-      <button class="tab active wall-chamber-tab" onclick="wallChamber('Senate', event)">Senate</button>
-      <button class="tab wall-chamber-tab" onclick="wallChamber('House', event)">House</button>
-    </div>
   </div>
 
   <div class="chart-label" id="wall-chart-label">Years served in the Senate · 2026 Class II incumbents</div>
@@ -638,7 +634,7 @@
     <svg id="chart-wall" class="chart-svg"></svg>
   </div>
   <div class="legend" id="wall-legend"></div>
-  <p class="wall-note">Senate: Class II incumbents only. Re-election status sourced live from the FEC API (api.fec.gov). Special elections (FL, OH) not included.</p>
+  <p class="wall-note">Class II incumbents only. Re-election status based on confirmed public announcements. Special elections (FL, OH) not included.</p>
 </section>
 
 <!-- FOOTER -->
@@ -1232,13 +1228,13 @@ function buildBLSChart(blsRows) {
 ═══════════════════════════════════════════════════════════ */
 let wallData        = [];
 let wallSortMode    = 'tenure';
-let wallChamberMode = 'Senate';
 
 function buildCalcificationWall(sen26Rows) {
-  wallData = sen26Rows;
-  buildWallStats(sen26Rows);
+  // Senate only — filter out any House rows that may exist in the CSV
+  wallData = sen26Rows.filter(r => !r.chamber || r.chamber === 'Senate');
+  buildWallStats(wallData);
   renderWall();
-  buildWallLegend(sen26Rows);
+  buildWallLegend(wallData);
 }
 
 function isSeeking(r) {
@@ -1287,20 +1283,11 @@ function wallSort(mode, e) {
   renderWall();
 }
 
-function wallChamber(mode, e) {
-  wallChamberMode = mode;
-  document.querySelectorAll('.wall-chamber-tab').forEach(t => t.classList.remove('active'));
-  e.target.classList.add('active');
-  renderWall();
-}
-
 function renderWall() {
   const svg = document.getElementById('chart-wall');
   while (svg.firstChild) svg.removeChild(svg.firstChild);
 
-  // Filter by chamber (fall back to all rows if no chamber column yet)
-  let rows = wallData.filter(r => !r.chamber || r.chamber === wallChamberMode);
-  if (!rows.length) rows = [...wallData]; // graceful stub for House (no data yet)
+  let rows = [...wallData];
 
   const ageMode = wallSortMode === 'age';
 
@@ -1308,8 +1295,8 @@ function renderWall() {
   const labelEl = document.getElementById('wall-chart-label');
   if (labelEl) {
     labelEl.textContent = ageMode
-      ? `Age (years) · 2026 ${wallChamberMode} incumbents`
-      : `Years served in the ${wallChamberMode} · 2026 Class II incumbents`;
+      ? 'Age (years) · 2026 Senate Class II incumbents'
+      : 'Years served in the Senate · 2026 Class II incumbents';
   }
 
   // Sort
@@ -1429,7 +1416,7 @@ function renderWall() {
       document.getElementById('tip-body').innerHTML =
         `${r.state}${r.district ? '-' + r.district : ''} · <span style="color:${partyColor}">${r.party}</span><br>` +
         `<span style="color:${color}">${genLabel}</span> · born ${r.born || '?'}<br>` +
-        `In ${r.chamber || 'Senate'} since ${r.since} — <b>${r.years_served} yrs</b><br>` +
+        `In Senate since ${r.since} — <b>${r.years_served} yrs</b><br>` +
         (seeking
           ? `<span style="color:#66ddbb">✓ Seeking re-election</span><br>Age end of next term: <b>${r.age_end_next_term}</b>`
           : `<span style="color:#666">✗ Not seeking re-election</span>`);
