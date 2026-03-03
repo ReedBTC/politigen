@@ -122,8 +122,8 @@ The re-election status for Senate and House incumbents is determined two differe
 
 ```python
 RETIRING_STATES = {
-    "DE",   # Chris Coons       — announced 2025-01-07
-    "GA",   # Jon Ossoff        — announced 2025-02-10  (running for governor)
+    "KY",   # Mitch McConnell   -- announced Feb 20, 2025
+    "WY",   # Cynthia Lummis    -- announced Dec 19, 2025
     ...
 }
 ```
